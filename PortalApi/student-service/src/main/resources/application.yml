@@ -1,0 +1,72 @@
+spring:
+#  config:
+#    import: optional:file:./.env[.properties]
+  application:
+    name: student-service
+
+  security:
+    user:
+      name: ${SECURITY_USER_NAME:user}
+      password: ${SECURITY_USER_PASSWORD:1234}
+
+  datasource:
+    url: jdbc:mysql://localhost:3309/studentsDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: student
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    generate-ddl: true
+    open-in-view: false
+
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      auto-offset-reset: earliest
+      group-id: group1
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: mcmanuel755@gmail.com
+    password: ${GMAIL_PASSWORD}
+    protocol: smtp  #smtps
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp: #smtps
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+#            enable: true
+            trust: smtp.gmail.com
+          connectiontimeout: 30000
+          timeout: 30000
+          writetimeout: 30000
+          debug: true
+
+#  profiles:
+#    active:
+#      - dev
+#  rabbitmq:
+#    username: admin
+#    password: admin
+#    host: localhost
+#    port: 5672
+
+server:
+  port: 8080
+
+# imap:
+#   host: imap.gmail.com
+#   port: 993
+#   username: ${MAIL_USERNAME:your_email@gmail.com}
+#   password: ${MAIL_PASSWORD:your_app_password}
+#   encryption: ssl

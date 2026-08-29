@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: course-service
+  profiles:
+    active:
+      - dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3308/coursesDb?createDatabaseIfNotExist=true
+    password: course
+    username: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    generate-ddl: true
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+  rabbitmq:
+    username: admin
+    password: admin
+    host: localhost
+    port: 5672
+
+server:
+  port: 8082
+
+STUDENT_SERVICE_URL: "localhost:8080/students"
+student.exchangeName: "school exchange"

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: admin-service
+
+
+
+
+admin:
+  exchangeName : school-notification
