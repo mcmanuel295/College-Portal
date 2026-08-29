@@ -115,7 +115,6 @@ public class StudentServiceImp implements StudentService {
                 return year+" "+dept.getFaculty().getCode()+dept.getCode()+end;
             }
             else{
-S
                 return year+" "+dept.getFaculty().getCode()+dept.getCode()+value;
             }
         }
