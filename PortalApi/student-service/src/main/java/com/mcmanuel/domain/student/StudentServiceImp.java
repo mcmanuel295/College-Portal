@@ -83,11 +83,13 @@ public class StudentServiceImp implements StudentService {
                 student.setLastname(request.getLastname());
                 student.setLastname(request.getLastname());
 
+
         return Mapper.toDto(studentRepo.save(student));
     }
 
     private String generateMatriculationNumber(String department){
-            String year;
+        String matriculationNumber;
+        String year;
         Department dept;
         if(Arrays.stream(Department.values()).anyMatch((each)->each.name().equalsIgnoreCase(department))){
             dept = Department.valueOf(department);
@@ -99,24 +101,28 @@ public class StudentServiceImp implements StudentService {
 
 
             if (list.isEmpty()) {
-                return year+dept.getFaculty().getCode()+dept.getCode()+"001";
+                matriculationNumber = year+dept.getFaculty().getCode()+dept.getCode()+"001";
             }
-            String lastMatricNumber = list.getLast();
-            int value =Integer.parseInt(lastMatricNumber.substring(6));
-            value++ ;
-            String end;
+            else {
+                String lastMatricNumber = list.getLast();
+                int value =Integer.parseInt(lastMatricNumber.substring(6));
+                value++ ;
+                String end;
 
-            if (value <= 9) {
-                end="00"+value;
-                return "170805"+end;
+                if (value <= 9) {
+                    end="00"+value;
+                    matriculationNumber=  year+dept.getFaculty().getCode()+dept.getCode()+end;
+                }
+                else if (value <= 99) {
+                    end="0"+value;
+                    matriculationNumber=  year+dept.getFaculty().getCode()+dept.getCode()+end;
+                }
+                else{
+                    matriculationNumber= year+dept.getFaculty().getCode()+dept.getCode()+value;
+                }
             }
-            else if (value <= 99) {
-                end="0"+value;
-                return year+" "+dept.getFaculty().getCode()+dept.getCode()+end;
-            }
-            else{
-                return year+" "+dept.getFaculty().getCode()+dept.getCode()+value;
-            }
+            System.out.println("generated matriculation number "+matriculationNumber);
+            return matriculationNumber;
         }
         throw new DepartmentNotFoundException("Invalid department");
     }
