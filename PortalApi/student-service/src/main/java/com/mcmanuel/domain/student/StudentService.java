@@ -22,6 +22,7 @@ public interface StudentService {
 
     void sendUserEmail(String email) throws MessagingException;
     boolean verifyOtp(String email,String otp);
+
     boolean registerCourses(String matricNumber, Set<Course> courseSet);
     boolean viewRegisteredCourses(String matricNumber);
 //    boolean viewResult(String matricNumber);
@@ -30,5 +31,7 @@ public interface StudentService {
     List<Notification> getNotifications(String matriculationNumber);
 //    String getCGPA(String matriculationNumber);
 //    String getGPA(String matriculationNumber);
+
     List<String> matriculationNumberList(String department);
+
 }

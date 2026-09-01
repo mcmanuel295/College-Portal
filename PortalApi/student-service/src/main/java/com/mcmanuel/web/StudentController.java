@@ -47,8 +47,8 @@ public class StudentController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<String>> findStudentsByCategory(@RequestParam String courseCode,
-                                                               @RequestParam String department,
+    public ResponseEntity<List<String>> findStudentsByCategory(@RequestParam (required =false) String courseCode,
+                                                               @RequestParam (required =false) String department,
                                                                @RequestParam(required = false,defaultValue = "0") int pageNo,
                                                                @RequestParam(defaultValue = "10",required = false) int pageSize){
 
