@@ -70,8 +70,8 @@ public class StudentController {
     }
 
 
-    @GetMapping("/matricNo")
-    ResponseEntity<StudentDto> findStudentByMatricNumber(@RequestParam String matricNumber){
+    @GetMapping("/{matricNo}")
+    ResponseEntity<StudentDto> findStudentByMatricNumber(@PathVariable  String matricNumber){
         StudentDto studentDto=service.getStudentByMatricNumber(matricNumber);
 
         if(studentDto!=null){
