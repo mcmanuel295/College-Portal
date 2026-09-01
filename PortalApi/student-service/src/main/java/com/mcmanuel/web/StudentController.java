@@ -70,24 +70,31 @@ public class StudentController {
     }
 
 
-    @GetMapping("/{matricNo}")
-    ResponseEntity<StudentDto> findStudentByMatricNumber(@PathVariable  String matricNumber){
-        StudentDto studentDto=service.getStudentByMatricNumber(matricNumber);
-
-        if(studentDto!=null){
-            return new ResponseEntity<>(studentDto, HttpStatus.OK);
+    @GetMapping("/search")
+    ResponseEntity<StudentDto> findStudentByMatricNumber(@RequestParam(required = false) String matricNumber,
+                                                         @RequestParam(required = false) String email){
+        if( (matricNumber==null || matricNumber.isEmpty()) && (email==null || email.isEmpty()) ){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+        else{
+            if(matricNumber!=null &&!matricNumber.isEmpty()){
+                StudentDto studentDto=service.getStudentByMatricNumber(matricNumber);
+                if(studentDto!=null){
+                    return new ResponseEntity<>(studentDto, HttpStatus.OK);
+                }
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-    @GetMapping("/email")
-    ResponseEntity<StudentDto> findStudentByEmail(@RequestParam String email){
-        StudentDto studentDto=service.getStudentByEmail(email);
+            }
+            else {
+                StudentDto studentDto=service.getStudentByEmail(email);
 
-        if(studentDto!=null){
-            return new ResponseEntity<>(studentDto, HttpStatus.OK);
+                if(studentDto!=null){
+                    return new ResponseEntity<>(studentDto, HttpStatus.OK);
+                }
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            }
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
