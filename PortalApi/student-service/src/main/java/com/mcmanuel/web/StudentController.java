@@ -41,17 +41,37 @@ public class StudentController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<StudentDto>> findAllStudents(@RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize){
-        return new ResponseEntity<>( service.getAllStudents(pageNo,pageSize),HttpStatus.OK);
+    public ResponseEntity<List<StudentDto>> findAllStudents(@RequestParam(required = false, defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize
+    ){
+        return new ResponseEntity<>(service.getAllStudents(pageNo,pageSize),HttpStatus.OK);
     }
 
-    @GetMapping("/course-code")
-    public ResponseEntity<List<String>> findAllStudentsByCourse(@RequestParam String courseCode, @RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize){
-        return new ResponseEntity<>( service.getAllStudentsByCourse(courseCode,pageNo,pageSize),HttpStatus.OK);
+    @GetMapping("/list")
+    public ResponseEntity<List<String>> findStudentsByCategory(@RequestParam String courseCode,
+                                                               @RequestParam String department,
+                                                               @RequestParam(required = false,defaultValue = "0") int pageNo,
+                                                               @RequestParam(defaultValue = "10",required = false) int pageSize){
+
+        if( (courseCode==null || courseCode.isEmpty()) && (department==null || department.isEmpty()) ){
+            return new ResponseEntity<>( List.of("Invalid Input"),HttpStatus.BAD_REQUEST);
+        }
+        else {
+            if(courseCode !=null && !courseCode.isEmpty()){
+                return new ResponseEntity<>( service.getAllStudentsByCourse(courseCode,pageNo,pageSize),HttpStatus.OK);
+            }
+            else{
+                List<String> list =service.getAllStudentsByDepartment(department,pageNo,pageSize) ;
+                if (list == null) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                return new ResponseEntity<>(list ,HttpStatus.OK);
+            }
+        }
     }
 
-    @GetMapping("/{matricNo}")
-    ResponseEntity<StudentDto> findStudentByMatricNumber(@PathVariable String matricNumber){
+
+    @GetMapping("/matricNo")
+    ResponseEntity<StudentDto> findStudentByMatricNumber(@RequestParam String matricNumber){
         StudentDto studentDto=service.getStudentByMatricNumber(matricNumber);
 
         if(studentDto!=null){
@@ -60,9 +80,9 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/{email}")
-    ResponseEntity<StudentDto> findStudentByEmail(@PathVariable String matricNumber){
-        StudentDto studentDto=service.getStudentByEmail(matricNumber);
+    @GetMapping("/email")
+    ResponseEntity<StudentDto> findStudentByEmail(@RequestParam String email){
+        StudentDto studentDto=service.getStudentByEmail(email);
 
         if(studentDto!=null){
             return new ResponseEntity<>(studentDto, HttpStatus.OK);

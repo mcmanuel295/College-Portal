@@ -161,6 +161,20 @@ public class StudentServiceImp implements StudentService {
     }
 
     @Override
+    public List<String> getAllStudentsByDepartment(String department, int pageNo, int pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by("matriculationNumber"));
+
+        if(studentRepo.getAllDepartments().stream().noneMatch(each -> each.name().equalsIgnoreCase(department))){
+                throw new DepartmentNotFoundException("Department Not Found");
+        }
+
+        return studentRepo.findAll(pageable).stream()
+                .filter(student -> student.getDepartment().getName().equalsIgnoreCase(department))
+                .map(Student::getMatriculationNumber).toList();
+    }
+
+    @Override
     public StudentDto updateBio(String matricNumber, StudentDto studentDto) {
         Student student =studentRepo.findByMatriculationNumber(matricNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matricNumber+" not found"));
 

@@ -13,7 +13,7 @@ public enum Faculty {
     ENVIRONMENTAL_SCIENCE("Environmental Science","05"),
     LAW("Law","06"),
     MANAGEMENT_SCIENCE("Management Science","07"),
-    SCIENCES("Sciences","08"),
+    SCIENCE("Science","08"),
     SOCIAL_SCIENCE("Social Science","09");
 
     private final String name;

@@ -46,7 +46,7 @@ public class StudentApplication {
                         RegisterRequest.builder()
                                 .firstname("Emmanuel")
                                 .lastname("Ogbu")
-                                .faculty(Faculty.SCIENCES)
+                                .faculty(Faculty.SCIENCE)
                                 .department(Department.COMPUTER_SCIENCE)
                                 .phoneNumber("09081199688")
 //                            .file()

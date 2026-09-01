@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Department {
     MECHANICAL_ENGINEERING(Faculty.ENGINEERING ,"Mechanical Engineering","01"),
-    PHYSICS(Faculty.SCIENCES,"Physics","01"),
-    CHEMISTRY(Faculty.SCIENCES,"Chemistry","04"),
-    COMPUTER_SCIENCE(Faculty.SCIENCES,"Computer Science","05"),
-    MATHEMATICS(Faculty.SCIENCES,"Mathematics","07");
+    PHYSICS(Faculty.SCIENCE,"Physics","01"),
+    CHEMISTRY(Faculty.SCIENCE,"Chemistry","04"),
+    COMPUTER_SCIENCE(Faculty.SCIENCE,"Computer Science","05"),
+    MATHEMATICS(Faculty.SCIENCE,"Mathematics","07");
 
     private final Faculty faculty;
     private final String name;

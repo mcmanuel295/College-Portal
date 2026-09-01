@@ -12,10 +12,14 @@ public interface StudentService {
     StudentDto registerStudent(String email, RegisterRequest request);
     StudentDto getStudentByMatricNumber(String MatricNumber);
     StudentDto getStudentByEmail(String email);
+
     List<StudentDto> getAllStudents( int pageNo,int pageSize);
     List<String> getAllStudentsByCourse(String courseCode, int pageNo,int pageSize);
+    List<String> getAllStudentsByDepartment(String department, int pageNo,int pageSize);
+
     StudentDto updateBio(String matricNumber,StudentDto studentDto);
     boolean deleteStudent(String matricNumber);
+
     void sendUserEmail(String email) throws MessagingException;
     boolean verifyOtp(String email,String otp);
     boolean registerCourses(String matricNumber, Set<Course> courseSet);
