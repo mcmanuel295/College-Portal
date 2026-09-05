@@ -1,6 +1,7 @@
 package com.mcmanuel.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.mcmanuel.enums.Department;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 

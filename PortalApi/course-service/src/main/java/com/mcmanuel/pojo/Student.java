@@ -1,6 +1,8 @@
 package com.mcmanuel.pojo;
 
 import com.mcmanuel.domain.course.CourseDto;
+import com.mcmanuel.enums.Department;
+import com.mcmanuel.enums.Faculty;
 import com.mcmanuel.enums.Level;
 import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
