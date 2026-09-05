@@ -10,6 +10,9 @@ import com.mcmanuel.pojo.QueuePayLoad;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,36 +26,25 @@ public class MessageHandlingService {
 
 
     @KafkaListener(topics = "{}",groupId = "${}")
-    public QueuePayLoad handleIncomingNotification(String messageBody) {
-
-        String key =jj ;//amqpMessage.getMessageProperties().getReceivedRoutingKey();
+    public QueuePayLoad handleIncomingNotification(@Payload String messageBody,
+                                                     @Header(KafkaHeaders.RECEIVED_KEY) String key
+                                                   ) {
 
         if( key== null){
             throw new RuntimeException("Key is null");
         }
+        
 
-        String routingKey = key.toLowerCase();
-        log.info("Processing notification received from routing key: {}", routingKey);
-
-        String[] keyParts = routingKey.split("\\.");
-        if (keyParts.length < 2) {
-            log.error("Invalid routing key format received: {}", routingKey);
-            throw new InvalidRoutingKeyException("Invalid routing key");
-        }
-
-        String targetType = keyParts[0];
-        String targetValue = keyParts[1];
-
-        List<String> targetStudentMatricNumbers = switch (targetType) {
+        List<String> targetStudentMatricNumbers = switch (key) {
             case "course" -> {
-                log.info("Fetching students actively taking course: {}", targetValue);
+                log.info("Fetching students actively taking course: {}", key);
 
 
-                yield courseClient.getCourseStudents(targetValue);
+                yield courseClient.getCourseStudents(key);
             }
             case "department" -> {
-                log.info("Fetching students belonging to department: {}", targetValue);
-                yield studentRepo.findAllByDepartment(targetValue)
+                log.info("Fetching students belonging to department: {}", key);
+                yield studentRepo.findAllByDepartment(key)
                         .stream().map(Student::getMatriculationNumber).toList();
             }
             case "school" -> {
@@ -61,7 +53,7 @@ public class MessageHandlingService {
                         .stream().map(Student::getMatriculationNumber).toList();
             }
             default -> {
-                log.warn("Unknown targeting category header: {}", targetType);
+                log.warn("Unknown targeting category header: {}", key);
                 throw new UnknownCategoryHeaderException("Unknown targeting category header");
             }
         };
