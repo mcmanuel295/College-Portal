@@ -1,18 +1,12 @@
 package com.mcmanuel.domain.student;
 
 import com.mcmanuel.client.CourseClient;
-import com.mcmanuel.exception.InvalidRoutingKeyException;
 import com.mcmanuel.exception.StudentNotFoundException;
 import com.mcmanuel.exception.UnknownCategoryHeaderException;
 import com.mcmanuel.pojo.Grade;
-import com.mcmanuel.pojo.Notification;
 import com.mcmanuel.pojo.QueuePayLoad;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,77 +18,71 @@ public class MessageHandlingService {
     private final StudentRepository studentRepo;
     private final CourseClient courseClient;
 
-
-    @KafkaListener(topics = "{}",groupId = "${}")
-    public QueuePayLoad handleIncomingNotification(@Payload String messageBody,
-                                                     @Header(KafkaHeaders.RECEIVED_KEY) String key
-                                                   ) {
-
+    public QueuePayLoad handleIncomingNotification(String messageBody,String key) {
         if( key== null){
             throw new RuntimeException("Key is null");
         }
-        
 
-        List<String> targetStudentMatricNumbers = switch (key) {
+        String category;
+
+        if (key.contains("course")){
+            category = "course";
+        }
+        else if(key.contains("department")){
+            category="department";
+        }
+        else category ="school";
+
+
+//        Get the recipient matriculation numbers list
+        List<String> targetStudentMatricNumbers = switch (category) {
             case "course" -> {
-                log.info("Fetching students actively taking course: {}", key);
+                String course = key.substring(key.indexOf("/")+1);
 
-
-                yield courseClient.getCourseStudents(key);
+                log.info("Fetching students actively taking course: {}", course);
+                yield courseClient.getCourseStudents(course);
             }
+
             case "department" -> {
                 log.info("Fetching students belonging to department: {}", key);
-                yield studentRepo.findAllByDepartment(key)
+
+                String department = key.substring(key.lastIndexOf("/")+1).toLowerCase();
+                yield studentRepo.findAllByDepartment(department)
                         .stream().map(Student::getMatriculationNumber).toList();
             }
+
             case "school" -> {
                 log.info("Broadcasting message across entire school registry");
                 yield studentRepo.findAll()
                         .stream().map(Student::getMatriculationNumber).toList();
             }
-            default -> {
-                log.warn("Unknown targeting category header: {}", key);
-                throw new UnknownCategoryHeaderException("Unknown targeting category header");
-            }
+
+            default -> throw new RuntimeException("Unexpected value: " + category);
         };
 
               return new QueuePayLoad(messageBody,targetStudentMatricNumbers);
     }
 
 
-
-    @KafkaListener()
-    public QueuePayLoad handleIncomingResult(Grade messageBody) {
-
-        String key = "";//amqpMessage.getMessageProperties().getReceivedRoutingKey();
+    public QueuePayLoad handleIncomingResult(Grade messageBody,String key) {
         if( key== null){
             throw new RuntimeException("Key is null");
         }
 
-        String routingKey = key.toLowerCase();
-        log.info("Processing message received from routing key: {}", routingKey);
+        String matricNumber ="";
+        if (key.contains("student") ) {
+            matricNumber = key.substring(key.lastIndexOf("/"));
 
-        String[] keyParts = routingKey.split("\\.");
-        if (keyParts.length < 2) {
-            log.error("Invalid routing key format for grade received: {}", routingKey);
-            throw new InvalidRoutingKeyException("Invalid routing key");
-        }
-
-        String targetType = keyParts[0];
-        String targetValue = keyParts[1];
-        String targetStudentMatricNumbers;
-
-        if(targetType.equalsIgnoreCase("student")){
-            log.info("Fetching student matriculation number belonging to department: {}", targetValue);
-            Student student = studentRepo.findByMatriculationNumber(targetValue).orElseThrow(()-> new StudentNotFoundException("Student with matric number "+targetType+" not found for grading"));
-            targetStudentMatricNumbers =student.getMatriculationNumber();
+            log.info("Fetching student matriculation number belonging to department: {}", matricNumber);
+            Student student = studentRepo.findByMatriculationNumber(matricNumber).orElseThrow(()-> new StudentNotFoundException("Student with matric number not found for grading"));
+            matricNumber =student.getMatriculationNumber();
 
         }
         else {
-            log.warn("Unknown targeting category header for result: {}", targetType);
+            log.warn("Unknown targeting category header for result: {}", matricNumber);
             throw new UnknownCategoryHeaderException("Unknown targeting category header");
         }
 
-        return new QueuePayLoad(messageBody,List.of(targetStudentMatricNumbers));
+        return new QueuePayLoad(messageBody,List.of(matricNumber));
     }
 }

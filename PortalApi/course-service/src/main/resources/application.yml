@@ -18,14 +18,6 @@ spring:
     hibernate:
       ddl-auto: update
 
-  rabbitmq:
-    username: admin
-    password: admin
-    host: localhost
-    port: 5672
-
 server:
   port: 8082
 
-STUDENT_SERVICE_URL: "localhost:8080/students"
-student.exchangeName: "school exchange"

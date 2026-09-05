@@ -16,6 +16,7 @@ import com.mcmanuel.exception.StudentNotFoundException;
 import com.mcmanuel.pojo.Grade;
 import com.mcmanuel.pojo.Notification;
 //import com.mcmanuel.pojo.QueuePayLoad;
+import com.mcmanuel.pojo.QueuePayLoad;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +45,7 @@ public class StudentServiceImp implements StudentService {
     private final TokenService tokenService;
     private final ResultRepository resultRepo;
     private final CourseClient courseClient;
-//    private final MessageHandlingService messageService;
+    private final MessageHandlingService messageService;
 
 
 
@@ -97,8 +100,6 @@ public class StudentServiceImp implements StudentService {
 
             List<String>list = matriculationNumberList(department);
             list.sort(String::compareTo);
-
-
 
             if (list.isEmpty()) {
                 matriculationNumber = year+dept.getFaculty().getCode()+dept.getCode()+"001";
@@ -184,32 +185,26 @@ public class StudentServiceImp implements StudentService {
     }
 
     @Override
+    public boolean deleteStudent(String matricNumber) {
+        Student student =studentRepo.findByMatriculationNumber(matricNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matricNumber+" not found"));
+        studentRepo.delete(student);
+        return true;
+    }
+
+    @Override
     public List<Notification> getNotifications(String matriculationNumber) {
         Student student=studentRepo.findByMatriculationNumber(matriculationNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matriculationNumber+" not found"));
         student.getNotification().sort(Comparator.comparing(Notification::getTimeReceived));
         return student.getNotification();
     }
 
-//    @Override
-//    public Result getResult(String matriculationNumber,String semester) {
-//        Student student =studentRepo.findByMatriculationNumber(matriculationNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matriculationNumber+" not found"));
-//        if (!semester.equalsIgnoreCase("first") && !semester.equalsIgnoreCase("second")) {
-//            throw new RuntimeException("Invalid Semester");
-//        }
-//        Result result =Result.builder()
-//                .semester(semester)
-//                .grades(new ArrayList<>(student.getSemesterGrades()))
-//                .studentMatriculationNumber(matriculationNumber)
-//                .build();
-//        return resultRepo.save(result);
-//    }
-
-
     @Override
-    public boolean deleteStudent(String matricNumber) {
-        Student student =studentRepo.findByMatriculationNumber(matricNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matricNumber+" not found"));
-        studentRepo.delete(student);
-        return true;
+    public Result getResult(String matriculationNumber,String semester) {
+        Student student =studentRepo.findByMatriculationNumber(matriculationNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matriculationNumber+" not found"));
+        if (!semester.equalsIgnoreCase("first") && !semester.equalsIgnoreCase("second")) {
+            throw new RuntimeException("Invalid Semester");
+        }
+        return resultRepo.findByMatriculationNumberAndSemester(matriculationNumber,semester);
     }
 
 
@@ -238,12 +233,13 @@ public class StudentServiceImp implements StudentService {
 
 
     @KafkaListener(topics = "170805008",groupId = "group1")
-    private void getResultFromQueue(@Payload Grade grade) {
-        Result result;
+    private void getResultFromQueue(@Payload Grade grade,@Header(KafkaHeaders.RECEIVED_KEY) String key) {
         log.info("new result {}",grade);
+        Result result;
 
+        QueuePayLoad queuePayLoad = messageService.handleIncomingResult(grade, key);
 
-        String incomingMatricNumber = grade.getMatriculationNumber() ;
+        String incomingMatricNumber = queuePayLoad.getMatricNumberList().getFirst() ;
         StudentDto dto = getStudentByMatricNumber(incomingMatricNumber);
 
         if(!dto.courseCodes().contains(grade.getCourseCode())){
@@ -264,12 +260,19 @@ public class StudentServiceImp implements StudentService {
         }
     }
 
-//    private void getNotificationFromTopic(String payload) {
-//        log.info("new message {}",payload);
-//        Student student =studentRepo.findByMatriculationNumber().orElseThrow(()-> new StudentNotFoundException("Student with matric number "++" not found"));
-//        student.getNotification().add(new Notification(payload,));
-//        log.info("notification added ");
-//    }
+    @KafkaListener(topics = "notification-event",groupId = "${}")
+    private void getNotificationFromTopic(@Payload String payload, @Header(KafkaHeaders.RECEIVED_KEY) String key) {
+        log.info("new message {}",payload);
+
+        QueuePayLoad queuePayLoad = messageService.handleIncomingNotification(payload, key);
+
+        for (String student : queuePayLoad.getMatricNumberList()){
+
+            studentRepo.findByMatriculationNumber(student).ifPresent(
+                    savedStudent -> savedStudent.getNotification().add(new Notification(payload, savedStudent.getMatriculationNumber())));
+        }
+        log.info("notification added ");
+    }
 
 
     private double computeResult(String matricNumber) {
