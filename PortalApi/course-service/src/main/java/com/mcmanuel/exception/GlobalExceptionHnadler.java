@@ -29,6 +29,7 @@ public class GlobalExceptionHnadler {
         return detail;
     }
 
+
     @ExceptionHandler(InvalidScoreException.class)
     public ProblemDetail invalidScore(InvalidScoreException ex){
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE,ex.getMessage());

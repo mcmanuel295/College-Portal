@@ -1,5 +1,6 @@
 package com.mcmanuel.domain.lecturer;
 
+import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;

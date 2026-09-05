@@ -26,12 +26,12 @@ public class CourseController {
     }
 
     @GetMapping("/")
-    ResponseEntity<List<CourseDto>>  getAllCourses(int pageNo, int pageSize){
+    ResponseEntity<List<CourseDto>> getAllCourses(int pageNo, int pageSize){
         return new ResponseEntity<>(courseService.getAllCourses(pageNo,pageSize),HttpStatus.OK);
     }
 
-    @GetMapping("/course-students")
-    ResponseEntity<List<String>> getCourseStudents(String courseCode,int pageNo, int pageSize){
+    @GetMapping("/{courseCode}/students")
+    ResponseEntity<List<String>> getCourseStudents(@PathVariable String courseCode, int pageNo, int pageSize){
         List<String> list = courseService.getCourseStudents(courseCode,pageNo,pageSize);
         if (list == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -58,7 +58,7 @@ public class CourseController {
     }
 
     @PutMapping("/{courseCode}")
-    ResponseEntity<CourseDto>  updateCourse(@PathVariable String courseCode,@RequestBody CourseDto updatedCourse){
+    ResponseEntity<CourseDto> updateCourse(@PathVariable String courseCode,@RequestBody CourseDto updatedCourse){
         CourseDto dto=courseService.updateCourse(courseCode,updatedCourse);
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -82,7 +82,7 @@ public class CourseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>("deletef",HttpStatus.OK);
-    };
+    }
 
     @PostMapping("/{courseCode}/notification")
     ResponseEntity<String> sendNotification(@PathVariable String courseCode, @RequestBody String message){

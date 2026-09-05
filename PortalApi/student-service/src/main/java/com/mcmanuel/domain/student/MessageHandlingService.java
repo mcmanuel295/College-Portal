@@ -74,7 +74,7 @@ public class MessageHandlingService {
     @KafkaListener()
     public QueuePayLoad handleIncomingResult(Grade messageBody) {
 
-        String key = jj//amqpMessage.getMessageProperties().getReceivedRoutingKey();
+        String key = "";//amqpMessage.getMessageProperties().getReceivedRoutingKey();
         if( key== null){
             throw new RuntimeException("Key is null");
         }

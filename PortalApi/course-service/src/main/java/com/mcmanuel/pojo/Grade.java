@@ -2,7 +2,10 @@ package com.mcmanuel.pojo;
 
 import com.mcmanuel.exception.InvalidScoreException;
 import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

@@ -1,5 +1,6 @@
 package com.mcmanuel.pojo;
 
+import com.mcmanuel.enums.Department;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;

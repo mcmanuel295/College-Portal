@@ -1,5 +1,6 @@
 package com.mcmanuel.domain.lecturer;
 
+import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -60,12 +61,12 @@ class Lecturer {
     @Column(nullable = false)
     private LocalDateTime dateCreated;
 
-
     private String imageUrl;
 
     private String fullName(){
         return this.getLastname()+" "+this.getFirstname();
     }
+
     public void setFirstname(String firstname) {
         this.firstname = firstname;
         fullName();
