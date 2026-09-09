@@ -1,13 +1,10 @@
 spring:
   application:
     name: course-service
-  profiles:
-    active:
-      - dev
 
   datasource:
-    url: jdbc:mysql://localhost:3308/coursesDb?createDatabaseIfNotExist=true
-    password: course
+    url: jdbc:mysql://localhost:3306/courseDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    password: "course"
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -15,6 +12,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     generate-ddl: true
     show-sql: false
+
     hibernate:
       ddl-auto: update
 
