@@ -27,13 +27,13 @@ public class CourseController {
     }
 
     @GetMapping("/")
-    ResponseEntity<List<CourseDto>> getAllCourses(int pageNo, int pageSize){
+    ResponseEntity<List<CourseDto>> getAllCourses(){
         return new ResponseEntity<>(courseService.getAllCourses(),HttpStatus.OK);
     }
 
     @GetMapping("/{courseCode}/students")
-    ResponseEntity<List<String>> getCourseStudents(@PathVariable String courseCode, int pageNo, int pageSize){
-        List<String> list = courseService.getCourseStudents(courseCode,pageNo,pageSize);
+    ResponseEntity<List<String>> getCourseStudents(@PathVariable String courseCode){
+        List<String> list = courseService.getCourseStudents(courseCode);
         if (list == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -59,8 +59,8 @@ public class CourseController {
     }
 
     @PutMapping("/{courseCode}")
-    ResponseEntity<CourseDto> updateCourse(@PathVariable String courseCode,@RequestBody CourseDto updatedCourse){
-        CourseDto dto=courseService.updateCourse(courseCode,updatedCourse);
+    ResponseEntity<CourseDto> updateCourse(@PathVariable String courseCode,@RequestBody CourseRequest courseRequest){
+        CourseDto dto=courseService.updateCourse(courseCode,courseRequest);
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

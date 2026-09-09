@@ -10,5 +10,5 @@ import java.util.List;
 public interface StudentClient {
 
     @GetMapping("/{courseCode}")
-    List<Student> getAllStudentsByCourse(String courseCode, @RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize);
+    List<Student> getAllStudentsByCourse(String courseCode);
 }

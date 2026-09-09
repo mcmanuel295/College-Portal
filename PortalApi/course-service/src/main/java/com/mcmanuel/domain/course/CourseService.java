@@ -16,17 +16,17 @@ public interface CourseService{
 
     CourseDto getCourseByCode(String courseCode);
 
-    void sendNotification(String courseCode,String message);
-
-    void sendGrade(String courseCode, Grade grade);
-
-    CourseDto updateCourse(String courseTitle,CourseDto updatedCourse);
-
     boolean deleteCourseByTitle(String courseTitle);
 
     boolean deleteCourseByCode(String courseCode);
 
-    List<String> getCourseStudents(String courseCode,int pageNo, int pageSize);
+    CourseDto updateCourse(String courseTitle,CourseRequest courseRequest);
+
+    void sendNotification(String courseCode,String message);
+
+    void sendGrade(String courseCode, Grade grade);
+
+    List<String> getCourseStudents(String courseCode);
 
     String gradeStudents(String courseCode, Map<String,Double> grades);
 
