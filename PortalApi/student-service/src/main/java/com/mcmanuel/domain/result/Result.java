@@ -22,9 +22,11 @@ public class Result {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID resultId;
 
+    @Column(nullable = false)
     private String semester;
 
-    private String studentMatriculationNumber;
+    @Column(nullable = false)
+    private String matriculationNumber;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "result_grades", joinColumns = @JoinColumn(name = "result_id"))

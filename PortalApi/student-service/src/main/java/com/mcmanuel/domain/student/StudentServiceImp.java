@@ -232,7 +232,7 @@ public class StudentServiceImp implements StudentService {
     }
 
 
-    @KafkaListener(topics = "170805008",groupId = "group1")
+    @KafkaListener(topics = "grade-event",groupId = "group1")
     private void getResultFromQueue(@Payload Grade grade,@Header(KafkaHeaders.RECEIVED_KEY) String key) {
         log.info("new result {}",grade);
         Result result;
@@ -253,14 +253,14 @@ public class StudentServiceImp implements StudentService {
             studentRepo.saveGPA(dto.matriculationNumber(),gpa);
             result =new Result();
             result.setGrades(dto.semesterGrades().stream().toList());
-            result.setStudentMatriculationNumber(dto.matriculationNumber());
+            result.setMatriculationNumber(dto.matriculationNumber());
             result.setSemester("first");
 
             resultRepo.save(result);
         }
     }
 
-    @KafkaListener(topics = "notification-event",groupId = "${}")
+    @KafkaListener(topics = "notification-event",groupId = "${spring.kafka.consumer.group-id}")
     private void getNotificationFromTopic(@Payload String payload, @Header(KafkaHeaders.RECEIVED_KEY) String key) {
         log.info("new message {}",payload);
 
