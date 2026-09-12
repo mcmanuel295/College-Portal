@@ -3,7 +3,7 @@ spring:
     name: course-service
 
   datasource:
-    url: jdbc:mysql://localhost:3306/courseDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3307/courseDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
     password: "course"
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver

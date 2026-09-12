@@ -33,16 +33,10 @@ public class CourseServiceImp implements CourseService {
     private final LecturerClient lecturerClient;
     private final GradeRepository gradeRepo;
 
-    @PrePersist
-    private void init(){
-        createCourse(
-                new CourseDto(
-                        "INTRODUCTION TO PROGRAMMING", "CSC 101", null, 3, Level.LEVEL100, null,null)
-        );
-    }
+
 
     @Override
-    public CourseDto createCourse(CourseDto dto) {
+    public CourseDto createCourse(CourseRequest dto) {
         Course course=Course.builder()
                 .unit(dto.unit())
                 .level(dto.level())
@@ -55,9 +49,8 @@ public class CourseServiceImp implements CourseService {
 
 
     @Override
-    public List<CourseDto> getAllCourses(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("courseCode"));
-        return courseRepo.findAll(pageable).stream().map(Mapper::toDto).toList();
+    public List<CourseDto> getAllCourses() {
+        return courseRepo.findAll().stream().map(Mapper::toDto).toList();
     }
 
     @Override
@@ -109,6 +102,7 @@ public class CourseServiceImp implements CourseService {
     public String gradeStudents(String courseCode, Map<String,Double> grades){
         CourseDto dto = getCourseByCode(courseCode);
         List<String> studentMatricList =getCourseStudents(dto.courseCode(),0,dto.studentList().size());
+        
         studentMatricList
                 .forEach(matricNumber ->{
                     Grade grade = new Grade();

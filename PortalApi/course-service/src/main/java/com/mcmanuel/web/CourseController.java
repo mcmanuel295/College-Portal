@@ -1,6 +1,7 @@
 package com.mcmanuel.web;
 
 import com.mcmanuel.domain.course.CourseDto;
+import com.mcmanuel.domain.course.CourseRequest;
 import com.mcmanuel.domain.course.CourseService;
 import com.mcmanuel.domain.grade.Grade;
 import com.mcmanuel.pojo.Lecturer;
@@ -21,13 +22,13 @@ public class CourseController {
     private final CourseService courseService;
 
     @PostMapping("/")
-    ResponseEntity<CourseDto> createCourse(CourseDto courseDto){
+    ResponseEntity<CourseDto> createCourse(CourseRequest courseDto){
         return new ResponseEntity<>(courseService.createCourse(courseDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/")
     ResponseEntity<List<CourseDto>> getAllCourses(int pageNo, int pageSize){
-        return new ResponseEntity<>(courseService.getAllCourses(pageNo,pageSize),HttpStatus.OK);
+        return new ResponseEntity<>(courseService.getAllCourses(),HttpStatus.OK);
     }
 
     @GetMapping("/{courseCode}/students")

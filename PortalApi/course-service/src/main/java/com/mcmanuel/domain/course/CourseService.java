@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface CourseService{
-    CourseDto createCourse(CourseDto course);
+    CourseDto createCourse(CourseRequest course);
 
-    List<CourseDto> getAllCourses(int pageNo, int pageSize);
+    List<CourseDto> getAllCourses();
 
     CourseDto getCourseByTitle(String courseTitle);
 
