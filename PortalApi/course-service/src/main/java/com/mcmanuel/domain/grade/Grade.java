@@ -22,6 +22,9 @@ public class Grade {
     private String matriculationNumber;
 
     @Column(nullable = false)
+    private String courseCode;
+    
+    @Column(nullable = false)
     private double score;
 
     @Min(value = 0)

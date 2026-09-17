@@ -16,10 +16,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -27,8 +29,7 @@ import java.util.Optional;
 @Slf4j
 public class CourseServiceImp implements CourseService {
     private final CourseRepository courseRepo;
-    private final ApplicationConfiguration appConfig;
-    private final KafkaTemplate<String,Object > template;
+    private final KafkaTemplate<String,Object> template;
     private final StudentClient studentClient;
     private final LecturerClient lecturerClient;
     private final GradeRepository gradeRepo;
@@ -69,12 +70,15 @@ public class CourseServiceImp implements CourseService {
 
 
     @Override
-    public CourseDto updateCourse(String courseTitle, CourseDto updatedDto) {
+    public CourseDto updateCourse(String courseTitle, CourseRequest courseRequest) {
         Course course = courseRepo.findByCourseTitle(courseTitle).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
 
-        Course updatedCourse =Mapper.toCourse(updatedDto);
-        updatedCourse.setCourseId(course.getCourseId());
-        return Mapper.toDto(courseRepo.save(updatedCourse));
+        course.setCourseTitle(courseRequest.courseTitle());
+        course.setCourseCode(courseRequest.courseCode());
+        course.setLevel(courseRequest.level());
+        course.setUnit(courseRequest.unit());
+
+        return Mapper.toDto(courseRepo.save(course));
     }
 
     @Override
@@ -92,18 +96,25 @@ public class CourseServiceImp implements CourseService {
     }
 
     @Override
-    public List<String> getCourseStudents(String courseCode,int pageNo, int pageSize) {
+    public List<String> getCourseStudents(String courseCode ) {
         Course course = courseRepo.findByCourseCode(courseCode).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
-        return studentClient.getAllStudentsByCourse(course.getCourseCode(),pageNo,pageSize).stream().map(Student::getMatriculationNumber).toList();
+        return studentClient.getAllStudentsByCourse(course.getCourseCode()).stream().map(Student::getMatriculationNumber).toList();
     }
 
 
     @Override
     public String gradeStudents(String courseCode, Map<String,Double> grades){
         CourseDto dto = getCourseByCode(courseCode);
-        List<String> studentMatricList =getCourseStudents(dto.courseCode(),0,dto.studentList().size());
-        
-        studentMatricList
+
+//        Prevent action if any Matriculation number String is invalid
+        Optional<String> invalidMatricNumber = grades.keySet().stream()
+                .filter(matricNumber -> !dto.studentList().contains(matricNumber))
+                .findAny();
+        if (invalidMatricNumber.isPresent()) {
+            throw new RuntimeException("one or more invalid matriculation number");
+        }
+
+        dto.studentList()
                 .forEach(matricNumber ->{
                     Grade grade = new Grade();
                     grade.setMatriculationNumber( grades.keySet().stream().filter(key -> key.equalsIgnoreCase(matricNumber)).toString());
@@ -130,34 +141,54 @@ public class CourseServiceImp implements CourseService {
             throw new RuntimeException("one or more invalid staff Id");
         }
 
-        CourseDto dto= Mapper.toDto(courseRepo.findByCourseTitle(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found")));
-        CourseDto.builder()
-                .courseCode(dto.courseCode())
-                .courseTitle(dto.courseTitle())
-                .fullTitle(dto.fullTitle())
-                .studentList(dto.studentList())
-                .unit(dto.unit())
-                .level(dto.level())
-                .assignedLecturers(staffNumbers)
-        .build();
-
+        Course course= courseRepo.findByCourseTitle(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+        course.setAssignedLecturers(staffNumbers);
+        courseRepo.save(course);
         return "lecturers assigned";
     }
 
-    @Override
-    public void sendNotification(String courseCode, String message) {
-        CourseDto dto = getCourseByCode(courseCode);
-        String routingKey = "course." + dto.courseCode().replaceAll("\\s+", "").toLowerCase();
 
-        template.send(appConfig.exchangeName(), routingKey, message);
-        log.info("Notification published via routing key: {}", routingKey);
+  @Override
+    public String unAssignedLecturers(String courseCode,List<String> staffNumbers) {
+      Optional<String> invalidStaffId = staffNumbers.stream()
+              .filter(staffNumber -> lecturerClient.findLecturerByStaffId(staffNumber) == null)
+              .findAny();
+      if (invalidStaffId.isPresent()) {
+          throw new RuntimeException("one or more invalid staff Id");
+      }
+      Course course= courseRepo.findByCourseTitle(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+
+      if(course.getAssignedLecturers().stream().anyMatch((id)-> lecturerClient.findLecturerByStaffId(id) !=null) ){
+         course.getAssignedLecturers().forEach((staffId) -> course.getAssignedLecturers().remove(staffId));
+      }
+      courseRepo.save(course);
+      return "lecturers assigned";
+    }
+
+    @Override
+    public void sendCourseNotification(String courseCode, String message) {
+        CourseDto dto = getCourseByCode(courseCode);
+        String key = "course/" + dto.courseCode();
+
+        template.send("notification-topic", key, message);
+        log.info("Notification published via key: {}", key);
     }
 
 
     @Override
     public void sendGrade(String courseCode,Grade grade) {
         CourseDto dto = getCourseByCode(courseCode);
-        template.send(appConfig.exchangeName(),"course."+dto.courseCode(),grade);
-        log.info("notification sent for course {}",dto.courseCode());
+         CompletableFuture<SendResult<String, Object>> future =template.send("grade-topic","student/"+dto.courseCode(),grade);
+
+         future.whenComplete((result,error)->{
+             if (error == null) {
+                 log.error("Error sending {} grade {} ",courseCode,grade);
+             }
+             else {
+                 log.info("sending {} grade {}",courseCode,grade);
+             }
+         });
+
+        log.info("Grade sent for course {}",dto.courseCode());
     }
 }

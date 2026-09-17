@@ -22,7 +22,7 @@ public interface CourseService{
 
     CourseDto updateCourse(String courseTitle,CourseRequest courseRequest);
 
-    void sendNotification(String courseCode,String message);
+    void sendCourseNotification(String courseCode,String message);
 
     void sendGrade(String courseCode, Grade grade);
 
@@ -33,4 +33,7 @@ public interface CourseService{
     List<Lecturer> getAssignedLecturers(String courseCode);
 
     String assignedLecturers(String courseCode,List<String> staffNumbers);
+
+    String unAssignedLecturers(String courseCode,List<String> staffNumbers);
 }
+
