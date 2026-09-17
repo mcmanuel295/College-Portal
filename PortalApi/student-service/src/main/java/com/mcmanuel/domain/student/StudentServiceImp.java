@@ -204,7 +204,7 @@ public class StudentServiceImp implements StudentService {
         if (!semester.equalsIgnoreCase("first") && !semester.equalsIgnoreCase("second")) {
             throw new RuntimeException("Invalid Semester");
         }
-        return resultRepo.findByMatriculationNumberAndSemester(matriculationNumber,semester);
+        return resultRepo.findByMatriculationNumberAndSemester(student.getMatriculationNumber(),semester);
     }
 
 
