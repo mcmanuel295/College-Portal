@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: student
       MYSQL_DATABASE: studentsDb
     volumes:
-      - student:/var/lib/mysql
+      - student:/var/lib/mysqlc
     networks:
       - student-network
     healthcheck:
