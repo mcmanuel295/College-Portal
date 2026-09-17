@@ -1,6 +1,6 @@
 services:
   student-db:
-    image: mysql:latest
+    image: mysql:8.4
     container_name: student-db
     ports:
       - "3309:3306"
@@ -12,13 +12,14 @@ services:
     networks:
       - student-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pstudent"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
 
   course-db:
-    image: mysql:latest
+    image: mysql:8.4
     container_name: course-db
     ports:
       - "3307:3306"
@@ -30,49 +31,69 @@ services:
     networks:
       - course-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pcourse"]
       interval: 10s
       timeout: 5s
-      retries: 5
-
+      retries: 10
+      start_period: 30s
 
   kafka:
     image: apache/kafka:4.3.1
     container_name: kafka
     ports:
-      - "9092:9092"
-      - "29092:29092"
-      - "29093:29093"
+      - "9092:9092"     # EXTERNAL  -> for apps running on your host
+      - "29092:29092"   # PLAINTEXT -> for apps running inside Docker
+      - "29093:29093"   # CONTROLLER (internal only, exposed for debugging)
     environment:
+      # --- KRaft identity ---
       KAFKA_NODE_ID: 1
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092'
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
-      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093,EXTERNAL://0.0.0.0:9092'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+      # --- Listeners ---
+      # CONTROLLER = internal controller traffic
+      # PLAINTEXT  = in-network clients (other containers)
+      # EXTERNAL   = host-machine clients
+      KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:29093,PLAINTEXT://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
-      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+      # --- Single-node replication settings ---
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+
+      # --- Rebalance / startup behavior ---
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
-    healthcheck:
-      test: [ "CMD", "kafka-topics", "--bootstrap-server", "localhost:29092", "--list" ]
-      interval: 15s
-      timeout: 10s
-      retries: 10
+      KAFKA_NUM_PARTITIONS: 1
+
+      # --- Logs ---
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_LOG_RETENTION_HOURS: 168
     volumes:
       - kafka_kraft:/var/lib/kafka/data
     networks:
       - student-network
       - course-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "kafka-topics --bootstrap-server localhost:29092 --list > /dev/null 2>&1 || exit 1"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
 
 networks:
   student-network:
-  lecturer-network:
   course-network:
 
 volumes:
