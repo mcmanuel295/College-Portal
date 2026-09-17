@@ -82,12 +82,12 @@ public class CourseController {
         if (!dto) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("deletef",HttpStatus.OK);
+        return new ResponseEntity<>("deleted",HttpStatus.OK);
     }
 
     @PostMapping("/{courseCode}/notification")
     ResponseEntity<String> sendNotification(@PathVariable String courseCode, @RequestBody String message){
-        courseService.sendNotification(courseCode,message);
+        courseService.sendCourseNotification(courseCode,message);
         log.info("notification sent {}",message);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -118,9 +118,18 @@ public class CourseController {
         return new ResponseEntity<>(lecturers,HttpStatus.OK);
     }
 
-    @PostMapping("/{courseCode}")
+    @PostMapping("/{courseCode}/assign-lecturer")
     ResponseEntity<String> assignedLecturers(@PathVariable String courseCode,@RequestBody List<String> staffNumbers){
         String lecturers = courseService.assignedLecturers(courseCode,staffNumbers);
+        if (lecturers == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Lecturers assigned",HttpStatus.OK);
+    }
+
+    @PostMapping("/{courseCode}/unassign-lecturer")
+    ResponseEntity<String> unAssignedLecturers(@PathVariable String courseCode,@RequestBody List<String> staffNumbers){
+        String lecturers = courseService.unAssignedLecturers(courseCode,staffNumbers);
         if (lecturers == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
