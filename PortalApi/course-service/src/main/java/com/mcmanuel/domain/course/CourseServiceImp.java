@@ -57,24 +57,24 @@ public class CourseServiceImp implements CourseService {
     @Override
     public CourseDto getCourseByTitle(String courseTitle) {
         return Mapper.toDto(
-                courseRepo.findByCourseTitle(courseTitle).orElseThrow(()->new CourseNotFoundException("Course Not Found"))
+                courseRepo.findByCourseTitle(courseTitle.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"))
         );
     }
 
     @Override
     public CourseDto getCourseByCode(String courseCode) {
         return Mapper.toDto(
-                courseRepo.findByCourseCode(courseCode).orElseThrow(()-> new CourseNotFoundException("Course Not Found"))
+                courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()-> new CourseNotFoundException("Course Not Found"))
         );
     }
 
 
     @Override
     public CourseDto updateCourse(String courseTitle, CourseRequest courseRequest) {
-        Course course = courseRepo.findByCourseTitle(courseTitle).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
+        Course course = courseRepo.findByCourseTitle(courseTitle.toUpperCase()).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
 
-        course.setCourseTitle(courseRequest.courseTitle());
-        course.setCourseCode(courseRequest.courseCode());
+        course.setCourseTitle(courseRequest.courseTitle().toUpperCase());
+        course.setCourseCode(courseRequest.courseCode().toUpperCase());
         course.setLevel(courseRequest.level());
         course.setUnit(courseRequest.unit());
 
@@ -83,21 +83,21 @@ public class CourseServiceImp implements CourseService {
 
     @Override
     public boolean deleteCourseByTitle(String courseTitle) {
-        Course course = courseRepo.findByCourseTitle(courseTitle).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+        Course course = courseRepo.findByCourseTitle(courseTitle.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
         courseRepo.delete(course);
         return true;
     }
 
     @Override
     public boolean deleteCourseByCode(String courseCode) {
-        Course course = courseRepo.findByCourseCode(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+        Course course = courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
         courseRepo.delete(course);
         return true;
     }
 
     @Override
     public List<String> getCourseStudents(String courseCode ) {
-        Course course = courseRepo.findByCourseCode(courseCode).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
+        Course course = courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
         return studentClient.getAllStudentsByCourse(course.getCourseCode()).stream().map(Student::getMatriculationNumber).toList();
     }
 
@@ -119,7 +119,7 @@ public class CourseServiceImp implements CourseService {
                     Grade grade = new Grade();
                     grade.setMatriculationNumber( grades.keySet().stream().filter(key -> key.equalsIgnoreCase(matricNumber)).toString());
                     grade.setScore(grades.get(matricNumber));
-                    sendGrade(courseCode,grade);
+                    sendGrade(courseCode.toUpperCase(),grade);
                     gradeRepo.save(grade);
                 });
         return "student graded";
@@ -127,7 +127,7 @@ public class CourseServiceImp implements CourseService {
 
     @Override
     public  List<Lecturer> getAssignedLecturers(String courseCode){
-        CourseDto dto= Mapper.toDto(courseRepo.findByCourseTitle(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found")));
+        CourseDto dto= Mapper.toDto(courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found")));
         return dto.assignedLecturers().stream()
                 .map(lecturerClient::findLecturerByStaffId).toList();
     }
@@ -141,7 +141,7 @@ public class CourseServiceImp implements CourseService {
             throw new RuntimeException("one or more invalid staff Id");
         }
 
-        Course course= courseRepo.findByCourseTitle(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+        Course course= courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
         course.setAssignedLecturers(staffNumbers);
         courseRepo.save(course);
         return "lecturers assigned";
@@ -156,7 +156,7 @@ public class CourseServiceImp implements CourseService {
       if (invalidStaffId.isPresent()) {
           throw new RuntimeException("one or more invalid staff Id");
       }
-      Course course= courseRepo.findByCourseTitle(courseCode).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+      Course course= courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
 
       if(course.getAssignedLecturers().stream().anyMatch((id)-> lecturerClient.findLecturerByStaffId(id) !=null) ){
          course.getAssignedLecturers().forEach((staffId) -> course.getAssignedLecturers().remove(staffId));
@@ -177,6 +177,7 @@ public class CourseServiceImp implements CourseService {
 
     @Override
     public void sendGrade(String courseCode,Grade grade) {
+
         CourseDto dto = getCourseByCode(courseCode);
          CompletableFuture<SendResult<String, Object>> future =template.send("grade-topic","student/"+dto.courseCode(),grade);
 

@@ -5,6 +5,7 @@ import com.mcmanuel.domain.course.CourseRequest;
 import com.mcmanuel.domain.course.CourseService;
 import com.mcmanuel.domain.grade.Grade;
 import com.mcmanuel.pojo.Lecturer;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,15 +23,18 @@ public class CourseController {
     private final CourseService courseService;
 
     @PostMapping("/")
+    @Operation(description = "Create Course Endpoint", summary = "Create course")
     ResponseEntity<CourseDto> createCourse(CourseRequest courseDto){
         return new ResponseEntity<>(courseService.createCourse(courseDto), HttpStatus.CREATED);
     }
 
+    @Operation(description = "Get All Courses Endpoint", summary = "Gets all courses")
     @GetMapping("/")
     ResponseEntity<List<CourseDto>> getAllCourses(){
         return new ResponseEntity<>(courseService.getAllCourses(),HttpStatus.OK);
     }
 
+    @Operation(description = "Get course by courseCode Endpoint", summary = "Get student taking course")
     @GetMapping("/{courseCode}/students")
     ResponseEntity<List<String>> getCourseStudents(@PathVariable String courseCode){
         List<String> list = courseService.getCourseStudents(courseCode);
@@ -40,8 +44,9 @@ public class CourseController {
         return new ResponseEntity<>(list,HttpStatus.OK);
     }
 
-    @GetMapping("/{courseTitle}/title")
-    ResponseEntity<CourseDto> getCourseByTitle(@PathVariable String courseTitle){
+    @Operation(description = "Get course by title", summary = "Get course by course title")
+    @GetMapping("/title")
+    ResponseEntity<CourseDto> getCourseByTitle(@RequestParam String courseTitle){
         CourseDto dto=courseService.getCourseByTitle(courseTitle);
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -49,8 +54,9 @@ public class CourseController {
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
-    @GetMapping("/{courseCde}/code")
-    ResponseEntity<CourseDto> getCourseByCode(@PathVariable String courseCode){
+    @Operation(description = "Get course by courseCode Endpoint", summary = "Get course by  course code")
+    @GetMapping("/code")
+    ResponseEntity<CourseDto> getCourseByCode(@RequestParam String courseCode){
         CourseDto dto=courseService.getCourseByCode(courseCode);
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -58,6 +64,7 @@ public class CourseController {
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
+    @Operation(description = "Update course", summary = "Update course")
     @PutMapping("/{courseCode}")
     ResponseEntity<CourseDto> updateCourse(@PathVariable String courseCode,@RequestBody CourseRequest courseRequest){
         CourseDto dto=courseService.updateCourse(courseCode,courseRequest);
@@ -67,6 +74,7 @@ public class CourseController {
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
+    @Operation(description = "Delete course", summary = "Delete course by title")
     @DeleteMapping("/{courseTitle}/title")
     ResponseEntity<String> deleteCourseByTitle(String courseTitle){
         boolean dto=courseService.deleteCourseByTitle(courseTitle);
@@ -76,6 +84,7 @@ public class CourseController {
         return new ResponseEntity<>("deleted",HttpStatus.OK);
     }
 
+    @Operation(description = "Delete course", summary = "Delete course by course code")
     @DeleteMapping("/{courseTitle}/code")
     ResponseEntity<String> deleteCourseByCode(String courseCode){
         boolean dto=courseService.deleteCourseByCode(courseCode);
@@ -85,6 +94,7 @@ public class CourseController {
         return new ResponseEntity<>("deleted",HttpStatus.OK);
     }
 
+    @Operation(description = "Send course notification", summary = "Send notification")
     @PostMapping("/{courseCode}/notification")
     ResponseEntity<String> sendNotification(@PathVariable String courseCode, @RequestBody String message){
         courseService.sendCourseNotification(courseCode,message);
@@ -92,6 +102,7 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Operation(description = "Send course grade", summary = "Send the course grade to topic")
     @PostMapping("/{courseCode}/grade")
     ResponseEntity<String> sendGrade(@PathVariable String courseCode, @RequestBody Grade grade){
         courseService.sendGrade(courseCode,grade);
@@ -99,6 +110,7 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @Operation(description = "Grade students", summary = "Grades the course students")
     @PostMapping("/{courseCode}/grade-student")
     ResponseEntity<String> gradeStudents(@PathVariable String courseCode, @RequestBody Map<String,Double> grades){
         String graded = courseService.gradeStudents(courseCode,grades);
@@ -109,6 +121,7 @@ public class CourseController {
     }
 
 
+    @Operation(description = "Get assigned lecturer", summary = "Get assigned lecturer to course")
     @PostMapping("/{courseCode}/assigned-lecturers")
     ResponseEntity<List<Lecturer>> getAssignedLecturers(@PathVariable String courseCode){
         List<Lecturer> lecturers = courseService.getAssignedLecturers(courseCode);
@@ -118,6 +131,7 @@ public class CourseController {
         return new ResponseEntity<>(lecturers,HttpStatus.OK);
     }
 
+    @Operation(description = "Assign lecturer", summary = "Assigns lecturer to  course")
     @PostMapping("/{courseCode}/assign-lecturer")
     ResponseEntity<String> assignedLecturers(@PathVariable String courseCode,@RequestBody List<String> staffNumbers){
         String lecturers = courseService.assignedLecturers(courseCode,staffNumbers);
@@ -128,6 +142,7 @@ public class CourseController {
     }
 
     @PostMapping("/{courseCode}/unassign-lecturer")
+    @Operation(description = "Endpoint to unassign lecturer", summary = "Unassigns lecturer")
     ResponseEntity<String> unAssignedLecturers(@PathVariable String courseCode,@RequestBody List<String> staffNumbers){
         String lecturers = courseService.unAssignedLecturers(courseCode,staffNumbers);
         if (lecturers == null) {
