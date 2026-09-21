@@ -1,5 +1,6 @@
 package com.mcmanuel;
 
+import com.mcmanuel.configuration.ApplicationConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
