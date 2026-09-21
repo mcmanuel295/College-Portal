@@ -31,7 +31,7 @@ public class PaymentService {
 
             SessionCreateParams createParams = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http::/localhost?successfulUrlS")
+                    .setSuccessUrl("http://localhost?successfulUrl")
                     .addLineItem(lineItem).build();
 
             Session session = Session.create(createParams);
