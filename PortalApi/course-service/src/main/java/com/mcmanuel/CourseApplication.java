@@ -29,16 +29,16 @@ public class CourseApplication {
     public CommandLineRunner commandLineRunner(CourseService courseService){
         return args ->{
             try{
-              courseService.getCourseByCode("CSC 101") ;
-              courseService.getCourseByCode("MAT 101") ;
-              courseService.getCourseByCode("CSC 102");
-              courseService.getCourseByCode("CSC 103") ;
+              courseService.getCourseByCode("CSC101") ;
+              courseService.getCourseByCode("MAT101") ;
+              courseService.getCourseByCode("CSC102");
+              courseService.getCourseByCode("CSC103") ;
             }
             catch (CourseNotFoundException ex) {
-                courseService.createCourse(new CourseRequest("INTRODUCTION TO PYTHON", "CSC 103", 3, Level.LEVEL100));
-                courseService.createCourse(new CourseRequest("INTRODUCTION TO PROGRAMMING", "CSC 101", 3, Level.LEVEL100));
-                courseService.createCourse(new CourseRequest("INTRODUCTION TO DISCRETE MATHEMATICS", "CSC 102", 3, Level.LEVEL100));
-                courseService.createCourse(new CourseRequest("INTRODUCTION TO ALGEBRA", "MAT 101", 3, Level.LEVEL100));
+                courseService.createCourse(new CourseRequest("INTRODUCTION_TO_PYTHON", "CSC103", 3, Level.LEVEL100));
+                courseService.createCourse(new CourseRequest("INTRODUCTION_TO_PROGRAMMING", "CSC101", 3, Level.LEVEL100));
+                courseService.createCourse(new CourseRequest("INTRODUCTION_TO_DISCRETE_MATHEMATICS", "CSC102", 3, Level.LEVEL100));
+                courseService.createCourse(new CourseRequest("INTRODUCTION_TO_ALGEBRA", "MAT101", 3, Level.LEVEL100));
             }
         };
     }
