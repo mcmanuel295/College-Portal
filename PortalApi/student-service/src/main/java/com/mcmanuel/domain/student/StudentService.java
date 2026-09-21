@@ -29,8 +29,8 @@ public interface StudentService {
     boolean getStudentProfile(String matricNumber);
     Result getResult(String matriculationNumber, String semester);
     List<Notification> getNotifications(String matriculationNumber);
-//    String getCGPA(String matriculationNumber);
-//    String getGPA(String matriculationNumber);
+    String getCGPA(String matriculationNumber);
+    String getGPA(String matriculationNumber);
 
     List<String> matriculationNumberList(String department);
 

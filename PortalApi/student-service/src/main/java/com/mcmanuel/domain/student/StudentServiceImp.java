@@ -210,8 +210,14 @@ public class StudentServiceImp implements StudentService {
 
     @Override
     public boolean registerCourses(String matricNumber, Set<Course> courseSet) throws StudentNotFoundException{
-        StudentDto studentDto = getStudentByMatricNumber(matricNumber);
-        courseSet.forEach((course)-> studentDto.courseCodes().add(course.getCourseCode()));
+//        todo verify course
+
+
+        Student student = studentRepo.findByMatriculationNumber(matricNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation Number "+matricNumber+" not found"));
+        courseSet.forEach((course)-> {
+            student.getCourseCodes().add(course.getCourseCode());
+        });
+        studentRepo.save(student);
         return true;
     }
 
@@ -309,15 +315,15 @@ public class StudentServiceImp implements StudentService {
         };
     }
 
-//    @Override
-//    public String getCGPA(String matriculationNumber) {
-//        return getStudentByMatricNumber(matriculationNumber).CGPA()+"";
-//    }
-//
-//    @Override
-//    public String getGPA(String matriculationNumber) {
-//        return getStudentByMatricNumber(matriculationNumber).GPA()+"";
-//    }
+    @Override
+    public String getCGPA(String matriculationNumber) {
+        return getStudentByMatricNumber(matriculationNumber).CGPA()+"";
+    }
+
+    @Override
+    public String getGPA(String matriculationNumber) {
+        return getStudentByMatricNumber(matriculationNumber).GPA()+"";
+    }
 
     @Override
     public List<String> matriculationNumberList(String department) {
