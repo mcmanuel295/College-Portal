@@ -1,5 +1,6 @@
 package com.mcmanuel.pojo;
 
+import com.mcmanuel.enums.CourseStatus;
 import com.mcmanuel.enums.Level;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,6 @@ public class Course {
     private String courseCode;
     private Level level;
     private Integer unit;
-    private char status;
+    private CourseStatus status;
 
 }
