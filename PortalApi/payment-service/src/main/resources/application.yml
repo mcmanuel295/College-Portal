@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: payment-service
+
+
+server:
+  port: 8383
+  
+  
+STRIPE:
+  API-KEY : "${STRIPE_SECRET_KEY}"
