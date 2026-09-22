@@ -238,7 +238,7 @@ public class StudentServiceImp implements StudentService {
     }
 
 
-    @KafkaListener(topics = "grade-event",groupId = "group1")
+    @KafkaListener(topics = "grade-topic",groupId = "${spring.kafka.consumer.group-id}")
     private void getResultFromQueue(@Payload Grade grade,@Header(KafkaHeaders.RECEIVED_KEY) String key) {
         log.info("new result {}",grade);
         Result result;
@@ -266,7 +266,7 @@ public class StudentServiceImp implements StudentService {
         }
     }
 
-    @KafkaListener(topics = "notification-event",groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "notification-topic",groupId = "${spring.kafka.consumer.group-id}")
     private void getNotificationFromTopic(@Payload String payload, @Header(KafkaHeaders.RECEIVED_KEY) String key) {
         log.info("new message {}",payload);
 
