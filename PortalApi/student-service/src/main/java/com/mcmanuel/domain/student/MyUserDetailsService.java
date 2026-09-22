@@ -13,8 +13,8 @@ public class MyUserDetailsService implements UserDetailsService{
     private final StudentRepository studentRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Student student = studentRepo.findByEmail(username).orElseThrow(()-> new StudentNotFoundException("Student Not FOund "+username));
+    public UserDetails loadUserByUsername(String matriculationNumber) throws UsernameNotFoundException {
+        Student student = studentRepo.findByMatriculationNumber(matriculationNumber).orElseThrow(()-> new StudentNotFoundException("Student Not Found "+matriculationNumber));
 
         return new MyUserDetails(student);
     }
