@@ -14,7 +14,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+lecturer.getRole()));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+lecturer.getRoles()));
     }
 
     @Override
