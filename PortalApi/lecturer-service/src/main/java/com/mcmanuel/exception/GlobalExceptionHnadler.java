@@ -29,6 +29,16 @@ public class GlobalExceptionHnadler {
         return detail;
     }
 
+    @ExceptionHandler(InvalidScoreException.class)
+    public ProblemDetail InvalidScoreException(InvalidScoreException ex){
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,ex.getMessage());
+
+        detail.setTitle("Invalid Score");
+        detail.setProperty("Timestamp", LocalDateTime.now());
+
+        return detail;
+    }
+
     @ExceptionHandler(DepartmentNotFoundException.class)
     public ProblemDetail departmentNotFoundException(DepartmentNotFoundException ex){
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,ex.getMessage());
