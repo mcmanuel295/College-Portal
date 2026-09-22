@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: student
       MYSQL_DATABASE: studentsDb
     volumes:
-      - student:/var/lib/mysqlc
+      - student:/var/lib/mysql
     networks:
       - student-network
     healthcheck:
@@ -42,8 +42,6 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"     # EXTERNAL  -> for apps running on your host
-      - "29092:29092"   # PLAINTEXT -> for apps running inside Docker
-      - "29093:29093"   # CONTROLLER (internal only, exposed for debugging)
     environment:
       KAFKA_KRAFT_MODE: 'true'
       KAFKA_NODE_ID: 1
@@ -57,9 +55,9 @@ services:
       # EXTERNAL   = host-machine clients
       KAFKA_LISTENERS: 'CONTROLLER://0.0.0.0:29093,PLAINTEXT://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092'
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,EXTERNAL://localhost:9092'
-#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
-#      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
 
       # --- Single-node replication settings ---
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -67,7 +65,7 @@ services:
 
 
       # --- Logs ---
-      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
       KAFKA_LOG_RETENTION_HOURS: 168
     volumes:
       - kafka_kraft:/var/lib/kafka/data
@@ -78,7 +76,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "kafka-topics --bootstrap-server localhost:29092 --list > /dev/null 2>&1 || exit 1"
+          "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:29092 --list > /dev/null 2>&1 || exit 1"
         ]
       interval: 10s
       timeout: 10s
