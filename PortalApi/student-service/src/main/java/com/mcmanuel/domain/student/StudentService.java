@@ -2,6 +2,7 @@ package com.mcmanuel.domain.student;
 
 import com.mcmanuel.domain.result.Result;
 import com.mcmanuel.pojo.Course;
+import com.mcmanuel.pojo.LoginRequest;
 import com.mcmanuel.pojo.Notification;
 import jakarta.mail.MessagingException;
 
@@ -34,4 +35,5 @@ public interface StudentService {
 
     List<String> matriculationNumberList(String department);
 
+    String login(LoginRequest loginRequest);
 }

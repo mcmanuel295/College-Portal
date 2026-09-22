@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.EntityTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Set;
 public class StudentController {
     private final StudentService service;
 
+    @PreAuthorize("hasAuthority()")
     @Operation(description = "Register Student Endpoint",summary ="Register student" )
     @PostMapping("/")
     public ResponseEntity<StudentDto> registerStudent(@RequestParam String email, @RequestBody RegisterRequest request){
@@ -47,6 +49,8 @@ public class StudentController {
     ){
         return new ResponseEntity<>(service.getAllStudents(pageNo,pageSize),HttpStatus.OK);
     }
+
+
     @Operation(description = "Find All Students by Category",summary ="Find All Students by either course code or department" )
     @GetMapping("/list")
     public ResponseEntity<List<String>> findStudentsByCategory(@RequestParam (required =false) String courseCode,
@@ -115,28 +119,6 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>("Deleted",HttpStatus.OK);
-    }
-
-    @Operation(description = "Activate Profile Endpoint",summary ="Activate Profile" )
-    @PostMapping("/activate")
-    public ResponseEntity<String> activateProfile(@RequestParam String email) throws MessagingException {
-        try{
-            service.sendUserEmail(email);
-            return new ResponseEntity<>("Email Sent",HttpStatus.OK);
-        }
-        catch (Exception ex){
-            return new ResponseEntity<>("Internal Error",HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-    @Operation(description = "Verify OTP",summary = "Verify OTP")
-    @PostMapping("/verify-otp")
-    public ResponseEntity<String> verifyOtp(@RequestParam String email, @Valid String otp) throws MessagingException {
-        if(service.verifyOtp(email,otp)){
-            return new ResponseEntity<>("VERIFIED",HttpStatus.OK);
-        }
-        else return new ResponseEntity<>("Invalid OTP",HttpStatus.NOT_ACCEPTABLE);
     }
 
 

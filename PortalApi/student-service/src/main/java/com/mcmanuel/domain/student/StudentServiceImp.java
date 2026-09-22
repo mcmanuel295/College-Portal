@@ -10,13 +10,10 @@ import com.mcmanuel.enums.Role;
 import com.mcmanuel.exception.CourseNotRegisteredException;
 import com.mcmanuel.exception.DepartmentNotFoundException;
 import com.mcmanuel.exception.InvalidScoreException;
-import com.mcmanuel.pojo.Course;
+import com.mcmanuel.pojo.*;
 import com.mcmanuel.domain.token.TokenService;
 import com.mcmanuel.exception.StudentNotFoundException;
-import com.mcmanuel.pojo.Grade;
-import com.mcmanuel.pojo.Notification;
 //import com.mcmanuel.pojo.QueuePayLoad;
-import com.mcmanuel.pojo.QueuePayLoad;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +25,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +46,8 @@ public class StudentServiceImp implements StudentService {
     private final ResultRepository resultRepo;
     private final CourseClient courseClient;
     private final MessageHandlingService messageService;
-
+    private final JwtService jwtService;
+    private final AuthenticationManager manager;
 
 
     @Override
@@ -331,6 +332,15 @@ public class StudentServiceImp implements StudentService {
             return studentRepo.getMatriculationNumberList(Department.valueOf(department));
         }
         else throw new DepartmentNotFoundException("Department Not Found"+department);
+    }
+
+    @Override
+    public String login(LoginRequest loginRequest) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
+        Authentication authentication =manager.authenticate(token);
+        if(authentication.isAuthenticated())
+            return jwtService.generateToken(loginRequest.getEmail());
+        else throw new RuntimeException("Invalid Login rewuest");
     }
 
 

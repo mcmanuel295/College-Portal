@@ -70,3 +70,5 @@ server:
 #   username: ${MAIL_USERNAME:your_email@gmail.com}
 #   password: ${MAIL_PASSWORD:your_app_password}
 #   encryption: ssl
+
+TOKEN_EXPIRATION : 3600000

@@ -1,6 +1,7 @@
 package com.mcmanuel.domain.student;
 
 import com.mcmanuel.client.CourseClient;
+import com.mcmanuel.domain.student.StudentRepository;
 import com.mcmanuel.exception.StudentNotFoundException;
 import com.mcmanuel.exception.UnknownCategoryHeaderException;
 import com.mcmanuel.pojo.Grade;
