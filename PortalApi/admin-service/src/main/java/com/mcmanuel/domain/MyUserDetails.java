@@ -10,40 +10,40 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class MyUserDetails implements UserDetails {
-    private final Student student;
+    private final Admin admin;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_"+student.getRole()));
+        return List.of(new SimpleGrantedAuthority("ROLE_"+admin.getRole()));
     }
 
     @Override
     public String getPassword() {
-        return student.getPassword();
+        return admin.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return student.getMatriculationNumber();
+        return admin.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
 }
