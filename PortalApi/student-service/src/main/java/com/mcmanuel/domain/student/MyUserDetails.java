@@ -24,7 +24,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return student.getMatriculationNumber();
+        return student.getEmail();
     }
 
     @Override
