@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Email;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -52,7 +54,7 @@ class Lecturer {
     private Set<String> courses;
 
     @Column(nullable = false)
-    private Role role;
+    private List<Role> roles =new ArrayList<>();
 
 
     @Column(nullable = false)
