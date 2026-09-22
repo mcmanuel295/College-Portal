@@ -7,8 +7,6 @@ import com.mcmanuel.domain.student.StudentDto;
 import com.mcmanuel.domain.student.StudentService;
 import com.mcmanuel.pojo.Notification;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.EntityTypeException;
@@ -27,7 +25,7 @@ import java.util.Set;
 public class StudentController {
     private final StudentService service;
 
-    @PreAuthorize("hasAuthority()")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Register Student Endpoint",summary ="Register student" )
     @PostMapping("/")
     public ResponseEntity<StudentDto> registerStudent(@RequestParam String email, @RequestBody RegisterRequest request){
@@ -43,6 +41,9 @@ public class StudentController {
         }
     }
 
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Find All Students Endpoint",summary ="Find All Students Endpoint" )
     @GetMapping("/")
     public ResponseEntity<List<StudentDto>> findAllStudents(@RequestParam(required = false, defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize
@@ -50,7 +51,7 @@ public class StudentController {
         return new ResponseEntity<>(service.getAllStudents(pageNo,pageSize),HttpStatus.OK);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Find All Students by Category",summary ="Find All Students by either course code or department" )
     @GetMapping("/list")
     public ResponseEntity<List<String>> findStudentsByCategory(@RequestParam (required =false) String courseCode,
@@ -76,6 +77,7 @@ public class StudentController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Find Student by Matriculation Number",summary ="Find Student by Matriculation Number" )
     @GetMapping("/search")
     ResponseEntity<StudentDto> findStudentByMatricNumber(@RequestParam(required = false) String matricNumber,
@@ -104,13 +106,14 @@ public class StudentController {
         }
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     @Operation(description = "Update Student Endpoint",summary ="Update Student" )
     @PutMapping("/update")
     public ResponseEntity<StudentDto> updateBio(@RequestParam String matricNumber,@RequestBody StudentDto studentDto){
         return new ResponseEntity<>(service.updateBio(matricNumber,studentDto), HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Delete Student Endpoint",summary ="Delete Student" )
     @DeleteMapping("/{matricNumber}")
     public ResponseEntity<String> deleteStudent(@PathVariable String matricNumber) {
@@ -122,6 +125,7 @@ public class StudentController {
     }
 
 
+    @PreAuthorize("hasRole('STUDENT')")
     @Operation(description = "Register Courses Endpoint",summary = "Register courses" )
     @PostMapping("/{matricNumber}/register-courses")
     public ResponseEntity<String> registerCourses(@PathVariable String matricNumber,@RequestBody Set<Course> courseSet){
@@ -131,6 +135,8 @@ public class StudentController {
         else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     @Operation(description = "View Course Registration",summary = "View Course Registration")
     @PostMapping("/{matricNumber}/view-registration")
     public ResponseEntity<String> viewRegisteredCourses(@PathVariable String matricNumber){
@@ -150,6 +156,8 @@ public class StudentController {
 //        else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
 //    }
 
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER') or hasRole('STUDENT')")
     @Operation(description = "Get Student Profile Endpoint",summary = "Get student profile")
     @PostMapping("/{matricNumber}/student-profile")
     public ResponseEntity<String> getStudentProfile(@PathVariable String matricNumber){
@@ -159,6 +167,8 @@ public class StudentController {
         else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
     }
 
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER')")
     @Operation(description = "Department Matriculation Number List Endpoint",summary = "List of matriculation number in a department")
     @GetMapping("/{department}")
     ResponseEntity<List<String>> matriculationNumberList(@PathVariable String department){
@@ -179,6 +189,7 @@ public class StudentController {
 //        return new ResponseEntity<>(result,HttpStatus.OK);
 //    }
 
+    @PreAuthorize("hasRole('STUDENT')")
     @Operation(description = "Get Notification Endpoint",summary = "Get notification")
     @GetMapping("/{matriculationNumber}/notification")
     ResponseEntity<List<Notification>> getNotification(String matriculationNumber){
@@ -189,6 +200,7 @@ public class StudentController {
         return new ResponseEntity<>(notifications,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT)")
     @Operation(description = "Get CGPA",summary = "Get CGPA")
     @GetMapping("/{matriculationNumber}/cgpa")
     ResponseEntity<String> getCGPA(String matriculationNumber){
@@ -199,6 +211,7 @@ public class StudentController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT)")
     @Operation(description = "Get GPA",summary = "Get CGPA")
     @GetMapping("/{matriculationNumber}/gpa")
     ResponseEntity<String> getGPA(String matriculationNumber){
