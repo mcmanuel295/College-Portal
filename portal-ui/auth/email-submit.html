@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/head.css">
+    <link rel="stylesheet" href="./auth-flow.css">
+    <link rel="stylesheet" href="../public/footer.css">
+    <title>Submit Email | University of the Learned</title>
+</head>
+<body class="auth-page">
+    <header>
+        <div id="top">
+            <img src="../file/learned.png" alt="school logo">
+            <h2 id="head_name">UNIVERSITY OF THE LEARNED</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../home/home.html">Home</a></li>
+                <li id="login">
+                    <a>Access</a>
+                    <ul>
+                        <li><a href="student.html" class="loginMenu">Student Login</a></li>
+                        <li><a href="lecturer.html" class="loginMenu">Lecturer Login</a></li>
+                        <li><a href="admin.html" class="loginMenu">Admin Portal</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="auth-container">
+        <section class="auth-card">
+            <div class="auth-icon">
+                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#dbeafe"/>
+                    <path d="M16 18h24c2.2 0 4 1.8 4 4v16c0 2.2-1.8 4-4 4H16c-2.2 0-4-1.8-4-4V22c0-2.2 1.8-4 4-4z" fill="none" stroke="#0284c7" stroke-width="2"/>
+                    <path d="M16 22l12 8 12-8" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <h1>Start Your Registration</h1>
+            <p class="subtitle">Enter your email address to begin the registration process. We'll send you a verification code.</p>
+
+            <form class="auth-form" method="post" onsubmit="submitEmail(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input id="email" type="email" name="email" placeholder="your.email@university.edu" required autofocus>
+                </div>
+
+                <button type="submit" class="btn primary">Continue</button>
+            </form>
+
+        </section>
+    </main>
+
+    <footer id="footer" class="site-footer"></footer>
+
+    <script>
+        function submitEmail(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            // Store email in session/URL for next steps
+            sessionStorage.setItem('registrationEmail', email);
+            window.location.href = `otp.html?email=${encodeURIComponent(email)}`;
+        }
+    </script>
+</body>
+</html>

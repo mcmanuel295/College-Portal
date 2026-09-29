@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./admin.css">
+    <title>Admin Dashboard | University of the Learned</title>
+</head>
+<body>
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <div class="admin-brand">
+                <img src="../file/learned.png" alt="Logo">
+                <div>
+                    <h1>University Admin</h1>
+                    <p>Campus Control Panel</p>
+                </div>
+            </div>
+            <nav class="admin-nav">
+                <ul>
+                    <li><a href="#overview" class="active">Overview</a></li>
+                    <li><a href="#users">User Management</a></li>
+                    <li><a href="#courses">Course Management</a></li>
+                    <li><a href="#reports">Reports</a></li>
+                    <li><a href="#settings">Settings</a></li>
+                </ul>
+            </nav>
+            <div class="admin-footer">
+                <a class="logout-btn" href="../home/home.html">Log Out</a>
+            </div>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-header">
+                <div>
+                    <p class="eyebrow">Admin Dashboard</p>
+                    <h2>Welcome Back, Administrator</h2>
+                    <p class="subtitle">Monitor system activity, manage users, and maintain academic operations.</p>
+                </div>
+            </header>
+
+            <section id="overview" class="admin-panel">
+                <div class="panel-row">
+                    <div class="stat-card">
+                        <p class="stat-value">1,240</p>
+                        <p class="stat-label">Active Students</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value">128</p>
+                        <p class="stat-label">Active Lecturers</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value">560</p>
+                        <p class="stat-label">Courses</p>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <h3>System Overview</h3>
+                    <p>Review registrations, course schedules, and platform usage from one place.</p>
+                </div>
+            </section>
+
+            <section id="users" class="admin-panel">
+                <h3>User Management</h3>
+                <p>Approve new accounts, reset passwords, and manage user roles across the portal.</p>
+            </section>
+
+            <section id="courses" class="admin-panel">
+                <h3>Course Management</h3>
+                <p>Create new course offerings, assign lecturers, and update term schedules.</p>
+            </section>
+
+            <section id="reports" class="admin-panel">
+                <h3>Reports</h3>
+                <p>Generate attendance, grades, and administrative reports for review.</p>
+            </section>
+
+            <section id="settings" class="admin-panel">
+                <h3>Settings</h3>
+                <p>Configure campus policies, system access, and portal preferences.</p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

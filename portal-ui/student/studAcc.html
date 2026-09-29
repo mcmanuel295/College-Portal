@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./studAcc.css">
+    <title>Student Dashboard | University of the Learned</title>
+</head>
+<body>
+    <div class="dashboard-shell">
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <img src="../file/learned.png" alt="University logo">
+                <div>
+                    <h1>University of the Learned</h1>
+                    <p>Student Portal</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#dashboard" class="active">Dashboard</a></li>
+                    <li><a href="#register">Register Courses</a></li>
+                    <li><a href="#results">Results</a></li>
+                    <li><a href="#profile">Update Biodata</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a class="logout-btn" href="./student.php">Log Out</a>
+            </div>
+        </aside>
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div>
+                    <p class="eyebrow">Welcome back</p>
+                    <h2>Student Dashboard</h2>
+                    <p class="subtitle">Manage your courses, view results, and update your profile.</p>
+                </div>
+                <div class="profile-card">
+                    <img src="../file/user3.png" alt="Student avatar">
+                    <div>
+                        <p class="profile-name"><?php echo $name ?></p>
+                        <p class="profile-meta"><?php echo $dept ?></p>
+                    </div>
+                </div>
+            </header>
+
+            <section id="dashboard" class="panel">
+                <div class="panel-row">
+                    <div class="stat-card">
+                        <p class="stat-value"><?php echo $matric ?></p>
+                        <p class="stat-label">Matric Number</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value">4.1</p>
+                        <p class="stat-label">Current CGPA</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-value">12</p>
+                        <p class="stat-label">Registered Units</p>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <h3>Welcome, <?php echo $name ?></h3>
+                    <p>Quick access to your academic information and student services.</p>
+                </div>
+            </section>
+
+            <section id="register" class="panel">
+                <h3>Register Courses</h3>
+                <p>Select courses, manage your registration, and review your timetable.</p>
+                <div class="action-card">
+                    <p>Course registration is open for the current semester.</p>
+                </div>
+            </section>
+
+            <section id="results" class="panel">
+                <h3>Results</h3>
+                <p>View your recent scores, semester results, and academic standing.</p>
+                <div class="action-card">
+                    <p>Your latest results will appear once published by the faculty.</p>
+                </div>
+            </section>
+
+            <section id="profile" class="panel">
+                <h3>Update Biodata</h3>
+                <p>Keep your personal information current for administration and scholarship eligibility.</p>
+                <div class="action-card">
+                    <p>Update your address, phone number, and emergency contact details.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

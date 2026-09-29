@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./lecturerAcc.css">
+  <title>Lecturer Dashboard</title>
+</head>
+<body>
+  <div class="dashboard-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="../file/learned.png" alt="logo">
+        <div>
+          <h1>University of the Learned</h1>
+          <p>Lecturer Portal</p>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="#dashboard" class="active">Dashboard</a></li>
+          <li><a href="#courses">My Courses</a></li>
+          <li><a href="#students">Students</a></li>
+          <li><a href="#grade">Submit Grades</a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <a class="logout-btn" href="./lecturer.php">Log Out</a>
+      </div>
+    </aside>
+    <main class="dashboard-main">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Welcome</p>
+          <h2>Lecturer Dashboard</h2>
+          <p class="subtitle">Manage courses, students, and submit results.</p>
+        </div>
+        <div class="profile-card">
+          <img src="../file/teacher.png" alt="Lecturer avatar">
+          <div>
+            <p class="profile-name"><?php echo $name ?></p>
+            <p class="profile-meta"><?php echo $dept ?></p>
+          </div>
+        </div>
+      </header>
+
+      <section id="dashboard" class="panel">
+        <div class="panel-row">
+          <div class="stat-card">
+            <p class="stat-value">8</p>
+            <p class="stat-label">Courses</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-value">240</p>
+            <p class="stat-label">Students</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-value">3</p>
+            <p class="stat-label">Pending Grades</p>
+          </div>
+        </div>
+        <div class="panel-content">
+          <h3>Good day, <?php echo $name ?></h3>
+          <p>Use the navigation to access your classes and submit grades.</p>
+        </div>
+      </section>
+
+      <section id="courses" class="panel">
+        <h3>My Courses</h3>
+        <p>List of courses assigned to you this semester.</p>
+      </section>
+
+      <section id="students" class="panel">
+        <h3>Students</h3>
+        <p>Search and view student profiles and academic records.</p>
+      </section>
+
+      <section id="grade" class="panel">
+        <h3>Submit Grades</h3>
+        <p>Upload or enter students' scores and submit grades for approval.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+<!--
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta httsection-equiv="X-UA-Comsectionatible" content="IE=edge">
+        <meta name="viewsectionort" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="../css/alumAcc.css">
+
+        <script src="../js/alumAcc.js"></script>
+        
+        <title>Document</title>
+    </head>
+
+    <body id="alumAcc">
+
+        <!-- HEADER -->
+        <div id="top">
+            <div id="button">
+                <img  src="../file/menu_icon.jpg" alt ="menu" width=30% height=45%/>
+            </div>
+            <div id="top_mid">
+                <h2>UNIVERSITY OF THE LEARNED</h2>
+            </div>
+        </div>
+
+        <!-- MAIN DODY -->
+
+        <!-- ALUMNUS DASHBOARD -->
+        
+        <section id="dash">
+            <sub> ALUMNUS DASHBOARD </sub><h2>WELCOME <?php echo $name ?></h2>
+        </section >
+
+        <div id="main">
+
+            <!-- SUB-MENU -->
+            <div id="sub_menu">
+                
+                <img src="../file/user2.png" width="50%" height="30%"/>
+                <ul id="list">
+                    <li><a id="homebtn" href="#home">Home</a></li>
+                    <li><a id="viewbtn" href="#view">view items</a> </li>
+                    <li><a id="donatebtn" href="#donate">donate items</a>
+                    <li><a id="reqbtn" href="#request">view request</a>
+                    <li><a id="logbtn" href="./alumni.php">log out</a></li>
+                </ul>
+            </div>
+
+            <div id="page">
+
+                <!-- HOME -->
+                <section class='sec' id= "home">
+
+                    <?php
+                    echo "HOME<br>" ;   
+                    ?>
+
+                    MATRIC NO : <?php echo $matric. "<br><br>" ?>
+                    NAME :      <?php echo $name. "<br><br>" ?>
+                    DEPARTMENT :    <?php echo $dept. "<br>" ?>
+                    <!-- ITEMS :  <?php echo "<br>" ?> -->
+                    
+                </section>
+
+
+                <!-- VIEW ITEMS -->
+                <section class='sec' id="view">
+                    
+                    <?php
+                        
+                        echo "ITEMS AVAILABLE<br><br>";
+                        $sql = "SELECT * FROM items" ;
+                        $res = mysqli_query($conn,$sql);
+                        $rowcount = mysqli_num_rows($res);
+
+                        if ($rowcount > 0) {
+                            echo "S/n Qty Item <br>";
+
+                            while($row = mysqli_fetch_assoc($res)){
+                                $tab =
+                                    "<tr> 
+                                        <td>".$row['id'].".</td>
+                                        <td>".$row['qty']."</td>
+                                        <td>".$row['item']."</td> 
+                                    </tr> <br>";
+                                echo $tab;
+                            }
+                        }
+                        else{
+                            die('nothing was returned');
+                        }
+
+                        echo "<br>";
+                    ?>
+                </section>
+
+
+                <!-- DONATE ITEMS -->
+                <section class='sec' id="donate">
+                    
+                    <?php 
+                        echo "<h2>DONATION</h2>" ; 
+                    ?>
+
+                    <form method="post" action=" <?php $_PHP_SELF ?>">
+                    <?PHP echo "DONATION LIST<br>" ?>    
+                    <input name="sel" list="don">
+                        <datalist id="don">
+                            
+                            <option>mattress</option>
+                            <option>Refrigerator</option>
+                            <option>pot</option>
+                            <option>cupboard</option>
+                            <option>table</option>
+                            <option>chair</option>
+                            <option>cooker</option>
+                            <option>box</option>
+                            <option>clothes</option>
+                            <option>books</option>
+                            <option>others</option>
+                        </datalist>
+
+                        <input type="submit">
+                    </form>
+
+                    <?php 
+                        if(isset($_POST['sel'])){
+                            $item = $_POST['sel'];
+                            
+
+
+                            $sql = "SELECT * FROM items WHERE item = '$item'";
+                            $res = mysqli_query($conn,$sql);
+                        
+                            $rowcount = mysqli_num_rows($res);
+
+                            if($rowcount>0){
+
+                                $qty = "SELECT qty FROM items WHERE item = '$item'";
+                                $res = mysqli_query($conn,$qty);
+                                
+                                $row =mysqli_fetch_assoc($res);
+                                $qty = $row['qty']+1;
+                                
+                                
+                                $sql = "UPDATE items SET qty= '$qty' WHERE item = '$item'";
+                                $res = mysqli_query($conn,$sql);
+                            }
+                            else{
+
+                                $sql="INSERT INTO items(`item`,`qty`) VALUES('$item',1)";
+                                $res = mysqli_query($conn,$sql);
+                            }
+
+                        }
+                    ?>
+                
+                </section>
+
+
+                <!-- VIEW REQUESTS TO APPROVE OR DECLINE -->
+                <section class='sec' id="request">
+
+                    <?php 
+                        echo "<h2>REQUEST FROM STUDENTS</h2>" ; 
+                    ?>
+
+                    <form>
+
+                        <?php 
+
+                            echo "VIEW REQUEST<br>";
+                            $str = array() ;
+
+                            $sql = "SELECT * FROM request";
+
+                            $res = mysqli_query($conn,$sql);
+
+                            $rowcount =mysqli_num_rows($res);
+
+                            if($rowcount>0){
+                                echo "A. D. Matric Name Item  <br>";
+
+
+                                while($row = mysqli_fetch_assoc($res)){
+                                    $matric =$row['matricNo'];
+                                    $name = $row['Name'];
+                                    
+                                    
+                                    $tab =
+                                        "<tr> 
+                                            <td><input type='radio' value='A' class ='A' name='" .$matric ."'></td>
+                                            <td><input type='radio' value='B' class='D' name ='".$matric ."'></td>
+                                            <td>".$row['matricNo'].".</td>
+                                            <td>".$row['Name']."</td>
+
+                                        </tr>"
+                                        .$str['age']= $_POST[$matric]."
+                                        
+                                        
+                                    
+                                        
+                                        <br>";
+                                                                           
+
+                                        // $str['$matric']= $_POST['matric']."
+                                        
+                                        echo $tab;
+                                }
+                               echo "<input name='sub' type='submit'>";
+                            }
+                            else{
+                                echo "Nothing was returned";
+                            }
+                        ?>
+                    </form>
+                    <?php
+                        if( isset($_POST['sub'])) {
+                            echo "This one is working oo";
+                            $get =$_POST[$matric]   ;
+                            echo "<br>";
+                            $len =count($str);
+                            echo $len. "<br>" ;
+
+
+                            foreach ($str as $key => $value) {
+                                echo " key : ".$key. " and value :" ;
+                            }
+
+
+                            // for ($i=0; $i < $len; $i++) { 
+                                
+                            //     if($col['$matric']==='A'){
+                            //         $sql ="INSERT INTO students WHERE matricNo =$matric" and "DELETE FROM request WHERE matricNo =$matric";
+
+                            //         $res =mysqli_query($conn,$sql);
+                            //     }
+                            //     else{
+                            //         $sql = "DELETE FROM request WHERE matricNo =$matric";
+                            //         $res =mysqli_query($conn,$sql);
+                            //     }
+
+                            // }
+
+                        }
+                        // else{
+                            //header('location:./alumAcc.php?#request');
+                        // }
+
+                    ?>
+                    
+
+                </section>
+
+
+                <!-- LOGOUT -->
+                <section class='sec'id="log">
+                    
+                </section>
+
+
+            </div>
+
+        </div>
+    
+    </body>
+
+    <footer>
+        <p>
+            This is the university of the learned. Lorem ipsum, dolor sit amet 
+            consectetur adipisicing elit. Suscipit, porro? Reprehenderit itaque 
+            deleniti architecto ipsa! Est fugiat quaerat eos eveniet, aliquam aut, 
+            consectetur, tempore quam aliquid sunt eaque suscipit at.
+        </p>
+    </footer>
+</html>
+-->
+
+
+

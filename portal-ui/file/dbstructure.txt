@@ -1,0 +1,29 @@
+DBNAME :phpwork
+
+TABLES
+alumni
+    COL: 
+    dept (varchar)          
+    matric (PRIM, varchar)
+    Name (varchar)
+    password(varchar)
+
+
+items
+    COL:
+    id (PRIM,int)
+    items (UNIQUE,varchar)  //item list available
+    qty(int)        //quantity available
+
+request
+    COL:
+    items (varchar)
+    matricNo(PRIM,varchar)
+    Name(varchar)
+
+students
+    COL:
+    Dept(varchar)
+    matricNo(PRIM,varchar)
+    Name(varchar)
+    password(varchar)

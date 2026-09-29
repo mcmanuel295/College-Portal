@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/head.css">
+    <link rel="stylesheet" href="./register.css">
+    <link rel="stylesheet" href="../public/footer.css">
+    <title>Register | University of the Learned</title>
+</head>
+<body class="register-page">
+    <header>
+        <div id="top">
+            <img src="../file/learned.png" alt="school logo">
+            <h2 id="head_name">UNIVERSITY OF THE LEARNED</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../home/home.html">Home</a></li>
+                <li id="login">
+                    <a>Access</a>
+                    <ul>
+                        <li><a href="student.html" class="loginMenu">Student Login</a></li>
+                        <li><a href="lecturer.html" class="loginMenu">Lecturer Login</a></li>
+                        <li><a href="admin.html" class="loginMenu">Admin Login</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="register-container">
+        <section class="register-card">
+            <div class="register-header">
+                <h1>Complete Your Registration</h1>
+                <p>Step 3 of 3 - Fill in your details to create your account</p>
+            </div>
+
+            <div style="background:#f0f9ff;border-radius:8px;padding:12px;margin-bottom:20px;">
+                <p style="margin:0;font-size:0.9rem;color:#475569;">Email: <strong id="display-email"></strong></p>
+            </div>
+
+            <div class="toggle-tabs">
+                <button class="tab-btn active" onclick="switchTab('student')">Student Registration</button>
+                <button class="tab-btn" onclick="switchTab('lecturer')">Lecturer Registration</button>
+            </div>
+
+            <!-- STUDENT REGISTRATION -->
+            <form id="student-form" class="register-form active" method="post" action="">
+                <h3>Student Registration</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="student-first">First Name</label>
+                        <input id="student-first" type="text" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="student-last">Last Name</label>
+                        <input id="student-last" type="text" name="last_name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="student-email">Email Address</label>
+                    <input id="student-email" type="email" name="email" required readonly style="background:#f8fafc;cursor:not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label for="student-matric">Matric Number</label>
+                    <input id="student-matric" type="text" name="matric_no" required placeholder="e.g., STU/2024/001">
+                </div>
+
+                <div class="form-group">
+                    <label for="student-dept">Department</label>
+                    <select id="student-dept" name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="computer_science">Computer Science</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="medicine">Medicine</option>
+                        <option value="law">Law</option>
+                        <option value="humanities">Humanities</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="student-phone">Phone Number</label>
+                    <input id="student-phone" type="tel" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="student-pass">Create Password</label>
+                    <input id="student-pass" type="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="student-confirm">Confirm Password</label>
+                    <input id="student-confirm" type="password" name="confirm_password" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input id="student-terms" type="checkbox" name="terms" required>
+                    <label for="student-terms">I agree to the terms and conditions</label>
+                </div>
+
+                <button type="submit" class="register-btn">Create Student Account</button>
+                <p class="form-footer">Already have an account? <a href="student.html">Login here</a></p>
+            </form>
+
+            <!-- LECTURER REGISTRATION -->
+            <form id="lecturer-form" class="register-form" method="post" action="">
+                <h3>Lecturer Registration</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lecturer-first">First Name</label>
+                        <input id="lecturer-first" type="text" name="first_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lecturer-last">Last Name</label>
+                        <input id="lecturer-last" type="text" name="last_name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-email">Email Address</label>
+                    <input id="lecturer-email" type="email" name="email" required readonly style="background:#f8fafc;cursor:not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-staff">Staff ID</label>
+                    <input id="lecturer-staff" type="text" name="staff_id" required placeholder="e.g., STAFF/2024/001">
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-dept">Department</label>
+                    <select id="lecturer-dept" name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="computer_science">Computer Science</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="medicine">Medicine</option>
+                        <option value="law">Law</option>
+                        <option value="humanities">Humanities</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-title">Academic Title</label>
+                    <select id="lecturer-title" name="title" required>
+                        <option value="">Select Title</option>
+                        <option value="professor">Professor</option>
+                        <option value="associate_prof">Associate Professor</option>
+                        <option value="senior_lecturer">Senior Lecturer</option>
+                        <option value="lecturer">Lecturer</option>
+                        <option value="assistant_lecturer">Assistant Lecturer</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-phone">Phone Number</label>
+                    <input id="lecturer-phone" type="tel" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-pass">Create Password</label>
+                    <input id="lecturer-pass" type="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturer-confirm">Confirm Password</label>
+                    <input id="lecturer-confirm" type="password" name="confirm_password" required>
+                </div>
+
+                <div class="checkbox-group">
+                    <input id="lecturer-terms" type="checkbox" name="terms" required>
+                    <label for="lecturer-terms">I agree to the terms and conditions</label>
+                </div>
+
+                <button type="submit" class="register-btn">Create Lecturer Account</button>
+                <p class="form-footer">Already have an account? <a href="lecturer.html">Login here</a></p>
+            </form>
+        </section>
+    </main>
+
+    <footer id="footer">
+        <p> This is the University of the learned.
+            <span>Disclaimer: Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis quis voluptatibus, odit eum eos sequi quidem molestiae nihil fugiat consectetur labore molestias suscipit animi rerum illo similique, mollitia deleniti quos?</span>
+            Copy Right &copy;
+        </p>
+        <section id="footer_section">
+            <span>CONTACT US :</span>
+            <div>
+                facebook <img class="icons" src="../file/facebook.png" alt="Facebook">
+                twitter <img class="icons" src="../file/twitter.png" alt="Twitter">
+                mail <img class="icons" src="../file/user1.jpg" alt="Email">
+            </div>
+        </section>
+    </footer>
+
+
+    <script>
+        // Retrieve and display email from URL or session
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email') || sessionStorage.getItem('registrationEmail') || '';
+        
+        if (email) {
+            document.getElementById('student-email').value = email;
+            document.getElementById('lecturer-email').value = email;
+            document.getElementById('display-email').textContent = email;
+        }
+
+        function switchTab(type) {
+            const studentForm = document.getElementById('student-form');
+            const lecturerForm = document.getElementById('lecturer-form');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            if (type === 'student') {
+                studentForm.classList.add('active');
+                lecturerForm.classList.remove('active');
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                lecturerForm.classList.add('active');
+                studentForm.classList.remove('active');
+                tabs[1].classList.add('active');
+                tabs[0].classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

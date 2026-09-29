@@ -1,0 +1,99 @@
+:root{
+    --bg:#f7fafc;
+    --primary:#0b5ed7;
+    --muted:#6b7280;
+    --max-width:1100px;
+    --accent:#eef2ff;
+}
+
+/* Reset + base */
+html,body{height:100%}
+body#home_body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg);
+    color:#0f1724;
+    -webkit-font-smoothing:antialiased;
+}
+
+.container{max-width:var(--max-width);margin:0 auto;padding:0 20px}
+
+/* Header */
+.site-header{background:linear-gradient(90deg,#ffffff,#f1f5f9);border-bottom:1px solid rgba(15,23,36,0.06);padding:14px 0}
+#top.container{display:flex;align-items:center;gap:16px}
+.logo{width:64px;height:auto;display:block}
+.brand h1{margin:0;font-size:1.2rem;letter-spacing:1px;text-transform:uppercase}
+.tagline{margin:0;color:var(--muted);font-size:0.9rem}
+
+/* Navigation */
+.main-nav{margin-left:auto}
+.main-nav ul{list-style:none;margin:10px 0 0 0;padding:0;display:flex;gap:18px;align-items:center}
+.main-nav a{color:var(--primary);text-decoration:none;padding:8px 10px;border-radius:6px;font-weight:600}
+.main-nav a:hover{background:var(--accent)}
+.has-dropdown{position:relative}
+.dropdown{position:absolute;left:0;top:calc(100% + 6px);background:#fff;box-shadow:0 6px 18px rgba(15,23,36,0.08);border-radius:8px;padding:6px 0;display:none;min-width:160px}
+.has-dropdown:hover .dropdown,.has-dropdown:focus-within .dropdown{display:block}
+.dropdown li a{display:block;padding:8px 16px;color:#0f1724}
+
+/* Hero */
+.hero{display:flex;align-items:center;gap:32px;padding:48px 0;background:linear-gradient(180deg,rgba(11,94,215,0.04),transparent)}
+.hero-inner{flex:1;display:flex;gap:24px;align-items:center}
+.hero-copy{flex:1}
+.hero-copy h2{margin:0 0 12px 0;font-size:2rem}
+.lead{margin:0 0 16px 0;color:var(--muted);font-size:1.05rem}
+.hero-media{flex:0 0 380px}
+.hero-image{width:100%;height:auto;border-radius:10px;object-fit:cover;box-shadow:0 8px 24px rgba(15,23,36,0.08)}
+.hero-ctas{display:flex;gap:12px;margin-top:12px}
+.btn{display:inline-block;text-decoration:none;padding:10px 16px;border-radius:8px;font-weight:700;border:1px solid transparent}
+.btn.primary{background:var(--primary);color:#fff}
+.btn:not(.primary){background:#fff;color:var(--primary);border-color:rgba(11,94,215,0.08)}
+
+/* Programs cards */
+.programs{padding:28px 0}
+.programs .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+.card{background:#fff;padding:18px;border-radius:8px;box-shadow:0 8px 20px rgba(15,23,36,0.04)}
+.card h4{margin:0 0 8px 0}
+
+/* Stats */
+.stats{padding:28px 0;background:linear-gradient(180deg,transparent,rgba(11,94,215,0.02))}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center}
+.stat strong{display:block;font-size:1.4rem;color:var(--primary)}
+.stat span{color:var(--muted)}
+
+/* About */
+.about{padding:28px 0}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+
+/* CTA */
+.cta{background:#fff;border-radius:10px;padding:28px;margin:28px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cta .muted{margin:0;color:var(--muted)}
+
+/* Footer */
+.site-footer{background:#0f1724;color:#e6eef8;padding:28px 0}
+.site-footer .footer-top{display:flex;flex-direction:row;justify-content:space-between;align-items:center}
+.site-footer .disclaimer{color:rgba(230,238,248,0.85);font-size:0.95rem}
+.footer-contact{display:flex;align-items:center;gap:16px;margin-top:12px}
+.social{list-style:none;padding:0;margin:0;display:flex;gap:12px}
+.social li{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.icons{width:22px;height:22px;border-radius:4px;object-fit:cover}
+
+/* Responsiveness */
+@media (max-width:900px){
+    .hero{flex-direction:column;align-items:flex-start}
+    .hero-media{width:100%}
+    .programs .cards{grid-template-columns:1fr}
+    .about-grid{grid-template-columns:1fr}
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .cta{flex-direction:column;align-items:flex-start}
+    .site-footer .footer-top{flex-direction:column;align-items:flex-start;gap:12px}
+}
+
+@media (max-width:480px){
+    .brand h1{font-size:1rem}
+    .hero h2{font-size:1.4rem}
+    .container{padding:0 12px}
+}
+
+/* Cleanup: ensure sections use consistent box-sizing */
+section{box-sizing:border-box}
+

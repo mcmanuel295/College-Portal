@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/head.css">
+    <link rel="stylesheet" href="./auth-flow.css">
+    <link rel="stylesheet" href="../public/footer.css">
+    <title>Enter OTP | University of the Learned</title>
+</head>
+<body class="auth-page">
+    <header>
+        <div id="top">
+            <img src="../file/learned.png" alt="school logo">
+            <h2 id="head_name">UNIVERSITY OF THE LEARNED</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../home/home.html">Home</a></li>
+                <li id="login">
+                    <a>Access</a>
+                    <ul>
+                        <li><a href="student.html" class="loginMenu">Student Login</a></li>
+                        <li><a href="lecturer.html" class="loginMenu">Lecturer Login</a></li>
+                        <li><a href="register.html" class="loginMenu">Register</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="auth-container">
+        <section class="auth-card">
+            <div class="auth-icon">
+                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <rect width="56" height="56" rx="12" fill="#ecfdf5"/>
+                    <path d="M28 16C21.4 16 16 21.4 16 28s5.4 12 12 12 12-5.4 12-12-5.4-12-12-12zm0 2c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10z" fill="#059669"/>
+                    <path d="M24 28l3 3 7-7" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <h1>Verify with OTP</h1>
+            <p class="subtitle">We sent a one-time password to your email. Enter the 6-digit code below.</p>
+
+            <div class="email-display" id="email-display" style="display:none;">
+                <p>Verification code sent to: <strong id="display-email"></strong></p>
+            </div>
+
+            <form class="otp-form" method="post" action="" onsubmit="verifyOTP(event)">
+                <div class="otp-inputs">
+                    <input type="text" class="otp-input" maxlength="1" autofocus inputmode="numeric">
+                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                    <input type="text" class="otp-input" maxlength="1" inputmode="numeric">
+                </div>
+
+                <button type="submit" class="btn primary">Verify OTP</button>
+            </form>
+
+            <div class="otp-footer">
+                <p>Didn't receive the code? <button class="link-btn" onclick="resendOTP()">Resend</button></p>
+                <p class="timer">Resend in <span id="countdown">60</span>s</p>
+            </div>
+
+        </section>
+    </main>
+
+    <footer id="footer">
+        <p> This is the University of the learned.
+            <span>Disclaimer: Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis quis voluptatibus, odit eum eos sequi quidem molestiae nihil fugiat consectetur labore molestias suscipit animi rerum illo similique, mollitia deleniti quos?</span>
+            Copy Right &copy;
+        </p>
+        <section id="footer_section">
+            <span>CONTACT US :</span>
+            <div>
+                facebook <img class="icons" src="../file/facebook.png" alt="Facebook">
+                twitter <img class="icons" src="../file/twitter.png" alt="Twitter">
+                mail <img class="icons" src="../file/user1.jpg" alt="Email">
+            </div>
+        </section>
+    </footer>
+
+    <script>
+        // Retrieve email from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email') || sessionStorage.getItem('registrationEmail');
+        
+        if (email) {
+            document.getElementById('display-email').textContent = email;
+            document.getElementById('email-display').style.display = 'block';
+        }
+
+        const inputs = document.querySelectorAll('.otp-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        function verifyOTP(event) {
+            event.preventDefault();
+            const otp = Array.from(inputs).map(i => i.value).join('');
+            if (otp.length === 6) {
+                // Store email for registration page
+                sessionStorage.setItem('registrationEmail', email);
+                window.location.href = `register.html?email=${encodeURIComponent(email)}`;
+            } else {
+                alert('Please enter all 6 digits');
+            }
+        }
+
+        function resendOTP() {
+            alert('OTP resent! Check your email.');
+            let seconds = 60;
+            const countdown = document.getElementById('countdown');
+            const interval = setInterval(() => {
+                seconds--;
+                countdown.textContent = seconds;
+                if (seconds === 0) clearInterval(interval);
+            }, 1000);
+        }
+
+        let seconds = 60;
+        const countdownEl = document.getElementById('countdown');
+        setInterval(() => {
+            seconds--;
+            countdownEl.textContent = seconds;
+            if (seconds === 0) seconds = 60;
+        }, 1000);
+    </script>
+</body>
+</html>

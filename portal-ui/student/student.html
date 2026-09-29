@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../public/head.css">
+    <link rel="stylesheet" href="./student.css">
+    <link rel="stylesheet" href="../public/footer.css">
+    <title>Student Login | University of the Learned</title>
+</head>
+<body class="student-login">
+    <header>
+        <div id="top">
+            <img src="../file/learned.png" alt="school logo">
+            <h2 id="head_name">UNIVERSITY OF THE LEARNED</h2>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="../home/home.html">Home</a></li>
+                <li id="login">
+                    <a>Login</a>
+                    <ul>
+                        <li><a href="../lecturer/lecturer.html" class="loginMenu">Lecturer</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main class="login-page">
+        <section class="login-card">
+            <div class="form-header">
+                <!-- <img src="../file/learned.png" alt="University logo" class="form-logo"> -->
+                <div>
+                    <h1>Student Login</h1>
+                    <p>Use your matric number and password to access the student portal.</p>
+                </div>
+            </div>
+            <form class="login-form" method="post" action="studAcc.html">
+                <div class="form-group">
+                    <label for="matric">Matric Number</label>
+                    <input id="matric" type="text" name="matric" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="pass">Password</label>
+                    <input id="pass" type="password" name="pass" required>
+                </div>
+                <button type="submit">Login</button>
+                <p style="margin:14px 0 0;text-align:center"><a href="forgot-password.html" style="color:#2563eb;text-decoration:none;font-size:0.9rem;font-weight:600">Forgot password?</a></p>
+            </form>
+            <p class="login-note">Don't have access yet? <a href="email-submit.html" style="color:#2563eb;text-decoration:none;font-weight:600">Register here</a></p>
+        </section>
+    </main>
+    <footer id="footer">
+        <p> This is the University of the learned.
+            <span>Disclaimer: Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis quis voluptatibus, odit eum eos sequi quidem molestiae nihil fugiat consectetur labore molestias suscipit animi rerum illo similique, mollitia deleniti quos?</span>
+            Copy Right &copy;
+        </p>
+        <section id="footer_section">
+            <span>CONTACT US :</span>
+            <div>
+                facebook <img class="icons" src="../file/facebook.png" alt="Facebook">
+                twitter <img class="icons" src="../file/twitter.png" alt="Twitter">
+                mail <img class="icons" src="../file/user1.jpg" alt="Email">
+            </div>
+        </section>
+    </footer>
+</body>
+</html>
