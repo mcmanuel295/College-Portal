@@ -23,7 +23,6 @@
 	</developers>
     <modules>
         <module>student-service</module>
-		<module>lecturer-service</module>
         <module>course-service</module>
         <module>admin-service</module>
         <module>payment-service</module>
