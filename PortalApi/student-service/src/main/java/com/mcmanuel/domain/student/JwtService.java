@@ -24,7 +24,7 @@ public class JwtService {
     private long TOKEN_EXPIRATION;
 
     public JwtService() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("Hmac SHA256");
+        KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
         SecretKey secretKey =keyGen.generateKey();
         secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 

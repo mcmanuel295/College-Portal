@@ -10,7 +10,7 @@ spring:
       password: ${SECURITY_USER_PASSWORD:1234}
 
   datasource:
-    url: jdbc:mysql://localhost:3309/studentsDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3309/studentsDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=30000&socketTimeout=60000
     username: root
     password: student
     driver-class-name: com.mysql.cj.jdbc.Driver
