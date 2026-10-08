@@ -10,7 +10,7 @@ spring:
       password: ${SECURITY_USER_PASSWORD:1234}
 
   datasource:
-    url: jdbc:mysql://localhost:3309/studentsDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=30000&socketTimeout=60000
+    url: jdbc:mysql://127.0.0.1:3309/studentsDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=30000&socketTimeout=60000
     username: root
     password: student
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -26,9 +26,9 @@ spring:
     consumer:
       bootstrap-servers: localhost:9092
       auto-offset-reset: earliest
-      group-id: group1
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: student-group
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
   mail:
     host: smtp.gmail.com
@@ -72,3 +72,8 @@ server:
 #   encryption: ssl
 
 TOKEN_EXPIRATION : 3600000
+
+logging:
+  level:
+    org.springframework:
+      security: debug
