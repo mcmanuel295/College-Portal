@@ -33,11 +33,11 @@ public class StudentController {
             return new ResponseEntity<>(service.registerStudent(email,request),HttpStatus.CREATED);
         }
         catch (EntityTypeException ex){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
         catch (Exception ex){
             log.error(ex.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -109,8 +109,8 @@ public class StudentController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     @Operation(description = "Update Student Endpoint",summary ="Update Student" )
     @PutMapping("/update")
-    public ResponseEntity<StudentDto> updateBio(@RequestParam String matricNumber,@RequestBody StudentDto studentDto){
-        return new ResponseEntity<>(service.updateBio(matricNumber,studentDto), HttpStatus.OK);
+    public ResponseEntity<StudentDto> updateBio(@RequestParam String matricNumber,@RequestParam String email,@RequestParam String phoneNumber){
+        return new ResponseEntity<>(service.updateBio(matricNumber,email,phoneNumber), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -128,22 +128,24 @@ public class StudentController {
     @PreAuthorize("hasRole('STUDENT')")
     @Operation(description = "Register Courses Endpoint",summary = "Register courses" )
     @PostMapping("/{matricNumber}/register-courses")
-    public ResponseEntity<String> registerCourses(@PathVariable String matricNumber,@RequestBody Set<Course> courseSet){
-        if(service.registerCourses(matricNumber,courseSet)){
-            return new ResponseEntity<>("Registered",HttpStatus.OK);
+    public ResponseEntity<Set<String>> registerCourses(@PathVariable String matricNumber,@RequestBody Set<Course> courseSet){
+        Set<String> registeredCourses = service.registerCourses(matricNumber,courseSet);
+        if(registeredCourses!=null){
+            return new ResponseEntity<>(registeredCourses,HttpStatus.OK);
         }
-        else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        else return ResponseEntity.badRequest().build();
     }
 
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     @Operation(description = "View Course Registration",summary = "View Course Registration")
     @PostMapping("/{matricNumber}/view-registration")
-    public ResponseEntity<String> viewRegisteredCourses(@PathVariable String matricNumber){
-        if(service.viewRegisteredCourses(matricNumber)){
-            return new ResponseEntity<>("VERIFIED",HttpStatus.OK);
+    public ResponseEntity<Set<String>> viewRegisteredCourses(@PathVariable String matricNumber){
+        Set<String> registeredCourses = service.viewRegisteredCourses(matricNumber);
+        if(registeredCourses !=null){
+            return new ResponseEntity<>(registeredCourses,HttpStatus.OK);
         }
-        else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        else return ResponseEntity.badRequest().build();
 
     }
 
@@ -160,11 +162,12 @@ public class StudentController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('LECTURER') or hasRole('STUDENT')")
     @Operation(description = "Get Student Profile Endpoint",summary = "Get student profile")
     @PostMapping("/{matricNumber}/student-profile")
-    public ResponseEntity<String> getStudentProfile(@PathVariable String matricNumber){
-        if(service.getStudentProfile(matricNumber)){
-            return new ResponseEntity<>("VERIFIED",HttpStatus.OK);
+    public ResponseEntity<StudentDto> getStudentProfile(@PathVariable String matricNumber){
+        StudentDto studentDto =service.getStudentProfile(matricNumber);
+        if(studentDto!=null){
+            return new ResponseEntity<>(studentDto,HttpStatus.OK);
         }
-        else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        else return ResponseEntity.badRequest().build();
     }
 
 
@@ -192,33 +195,33 @@ public class StudentController {
     @PreAuthorize("hasRole('STUDENT')")
     @Operation(description = "Get Notification Endpoint",summary = "Get notification")
     @GetMapping("/{matriculationNumber}/notification")
-    ResponseEntity<List<Notification>> getNotification(String matriculationNumber){
+    ResponseEntity<List<Notification>> getNotification(@PathVariable String matriculationNumber){
         List<Notification> notifications = service.getNotifications(matriculationNumber);
         if (notifications == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+            return ResponseEntity.badRequest().build();
         }
-        return new ResponseEntity<>(notifications,HttpStatus.OK);
+        return ResponseEntity.ok(notifications);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT)")
+    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT')")
     @Operation(description = "Get CGPA",summary = "Get CGPA")
     @GetMapping("/{matriculationNumber}/cgpa")
-    ResponseEntity<String> getCGPA(String matriculationNumber){
+    ResponseEntity<String> getCGPA(@PathVariable String matriculationNumber){
         var cgpa =service.getCGPA(matriculationNumber);
         if(cgpa != null ){
-            return new ResponseEntity<>(cgpa,HttpStatus.OK);
+            return ResponseEntity.ok(cgpa);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT)")
+    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT')")
     @Operation(description = "Get GPA",summary = "Get CGPA")
     @GetMapping("/{matriculationNumber}/gpa")
-    ResponseEntity<String> getGPA(String matriculationNumber){
+    ResponseEntity<String> getGPA(@PathVariable String matriculationNumber){
         var gpa =service.getGPA(matriculationNumber);
         if(gpa != null){
             return new ResponseEntity<>(gpa,HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return ResponseEntity.notFound().build();
     }
 }
