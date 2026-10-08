@@ -3,17 +3,15 @@ spring:
     name: staff-service
 
   datasource:
-    url: jdbc:mysql://localhost:3308/staffDb?createDatabaseIfNotExist=true
+    url: jdbc:mysql://127.0.0.1:3308/staffDb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&connectTimeout=30000&socketTimeout=60000
     username: root
     password: staff
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
     show-sql: false
-    generate-ddl: true
 
   mail:
     host: smtp.gmail.com

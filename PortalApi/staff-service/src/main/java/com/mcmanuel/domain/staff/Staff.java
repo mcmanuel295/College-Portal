@@ -1,6 +1,9 @@
 package com.mcmanuel.domain.staff;
 
 import com.mcmanuel.enums.Role;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@MappedSuperclass
 public abstract class Staff {
     private String firstname;
     private String lastname;

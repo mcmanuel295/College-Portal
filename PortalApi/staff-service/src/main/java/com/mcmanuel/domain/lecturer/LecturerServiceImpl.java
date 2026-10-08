@@ -45,7 +45,7 @@ public class LecturerServiceImpl implements LecturerService{
                 .build();
         lecturer.setFirstname(request.getFirstname());
         lecturer.setLastname(request.getLastname());
-        return Mapper.toDto(lecturerRepo.save(lecturer));
+        return Mapper.toDto(lecturerRepo.save((Lecturer) lecturer));
     }
 
     private String generateStaffId(String department) {
