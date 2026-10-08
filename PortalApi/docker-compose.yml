@@ -18,6 +18,26 @@ services:
       retries: 10
       start_period: 30s
 
+
+  staff-db:
+    image: mysql:8.4
+    container_name: staff-db
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: staff
+      MYSQL_DATABASE: staffsDb
+    volumes:
+      - staff:/var/lib/mysql
+    networks:
+      - staff-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pstaff"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   course-db:
     image: mysql:8.4
     container_name: course-db
@@ -71,6 +91,7 @@ services:
       - kafka_kraft:/var/lib/kafka/data
     networks:
       - student-network
+      - staff-network
       - course-network
     healthcheck:
       test:
@@ -86,8 +107,10 @@ services:
 networks:
   student-network:
   course-network:
+  staff-network:
 
 volumes:
   student:
+  staff:
   course:
   kafka_kraft:
