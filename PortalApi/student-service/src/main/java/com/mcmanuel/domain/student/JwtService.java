@@ -1,5 +1,6 @@
 package com.mcmanuel.domain.student;
 
+import com.mcmanuel.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -37,6 +38,7 @@ public class JwtService {
 
     public String generateToken(String username){
         Map<String,Object> claims = new HashMap<>();
+        claims.put("role", Role.STUDENT.name());
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
@@ -66,7 +68,7 @@ public class JwtService {
 
 
     public boolean verify(UserDetails userDetails, String token) {
-        return userDetails.getUsername().equals(extractUsername(token)) && extractExpirationDate(token).before(new Date());
+        return userDetails.getUsername().equals(extractUsername(token)) && !extractExpirationDate(token).before(new Date());
     }
 
     private Date extractExpirationDate(String token){

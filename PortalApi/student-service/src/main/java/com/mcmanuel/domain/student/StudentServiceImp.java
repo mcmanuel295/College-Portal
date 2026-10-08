@@ -179,12 +179,11 @@ public class StudentServiceImp implements StudentService {
     }
 
     @Override
-    public StudentDto updateBio(String matricNumber, StudentDto studentDto) {
+    public StudentDto updateBio(String matricNumber, String email,String phoneNumber) {
         Student student =studentRepo.findByMatriculationNumber(matricNumber).orElseThrow(()-> new StudentNotFoundException("Student with matriculation number "+matricNumber+" not found"));
-
-        Student dto = Mapper.toStudent(studentDto);
-        dto.setStudentId(student.getStudentId());
-        return Mapper.toDto(studentRepo.save(dto));
+        student.setPhoneNumber(phoneNumber);
+        student.setEmail(email);
+        return Mapper.toDto(studentRepo.save(student));
     }
 
     @Override
@@ -212,7 +211,7 @@ public class StudentServiceImp implements StudentService {
 
 
     @Override
-    public boolean registerCourses(String matricNumber, Set<Course> courseSet) throws StudentNotFoundException{
+    public Set<String> registerCourses(String matricNumber, Set<Course> courseSet) throws StudentNotFoundException{
 //        todo verify course
 
 
@@ -221,13 +220,15 @@ public class StudentServiceImp implements StudentService {
             student.getCourseCodes().add(course.getCourseCode());
         });
         studentRepo.save(student);
-        return true;
+        System.out.println("courses registered "+courseSet);
+        return student.getCourseCodes();
     }
 
 
     @Override
-    public boolean viewRegisteredCourses(String matricNumber) {
-        return false;
+    public Set<String> viewRegisteredCourses(String matricNumber) {
+        StudentDto dto =getStudentByMatricNumber(matricNumber);
+        return dto.courseCodes();
     }
 
 //    @Override
@@ -236,12 +237,12 @@ public class StudentServiceImp implements StudentService {
 //    }
 
     @Override
-    public boolean getStudentProfile(String matricNumber) {
-        return false;
+    public StudentDto getStudentProfile(String matricNumber) {
+        return getStudentByMatricNumber(matricNumber);
     }
 
 
-    @KafkaListener(topics = "grade-topic",groupId = "${spring.kafka.consumer.group-id}")
+    @KafkaListener(topics = "grade-topic",groupId = "student-group") //"${spring.kafka.consumer.group-id}")
     private void getResultFromQueue(@Payload Grade grade,@Header(KafkaHeaders.RECEIVED_KEY) String key) {
         log.info("new result {}",grade);
         Result result;
@@ -340,9 +341,12 @@ public class StudentServiceImp implements StudentService {
     public String login(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
         Authentication authentication =manager.authenticate(token);
-        if(authentication.isAuthenticated())
-            return jwtService.generateToken(loginRequest.getEmail());
-        else throw new RuntimeException("Invalid Login rewuest");
+        if(authentication.isAuthenticated()) {
+            String jwtToken = jwtService.generateToken(loginRequest.getEmail());
+            System.out.println("JWT Token :"+jwtToken);
+            return jwtToken;
+        }
+        else throw new RuntimeException("Invalid Login request");
     }
 
 

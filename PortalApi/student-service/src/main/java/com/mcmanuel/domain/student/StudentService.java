@@ -18,16 +18,16 @@ public interface StudentService {
     List<String> getAllStudentsByCourse(String courseCode, int pageNo,int pageSize);
     List<String> getAllStudentsByDepartment(String department, int pageNo,int pageSize);
 
-    StudentDto updateBio(String matricNumber,StudentDto studentDto);
+    StudentDto updateBio(String matricNumber,String email,String phoneNumber);
     boolean deleteStudent(String matricNumber);
 
     void sendUserEmail(String email) throws MessagingException;
     boolean verifyOtp(String email,String otp);
 
-    boolean registerCourses(String matricNumber, Set<Course> courseSet);
-    boolean viewRegisteredCourses(String matricNumber);
+    Set<String> registerCourses(String matricNumber, Set<Course> courseSet);
+    Set<String> viewRegisteredCourses(String matricNumber);
 //    boolean viewResult(String matricNumber);
-    boolean getStudentProfile(String matricNumber);
+    StudentDto getStudentProfile(String matricNumber);
     Result getResult(String matriculationNumber, String semester);
     List<Notification> getNotifications(String matriculationNumber);
     String getCGPA(String matriculationNumber);
