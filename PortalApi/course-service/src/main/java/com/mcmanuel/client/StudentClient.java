@@ -9,6 +9,6 @@ import java.util.List;
 @FeignClient(name = "student-service", url = "${STUDENT_SERVICE_URL:localhost:8080/students}")
 public interface StudentClient {
 
-    @GetMapping("/{courseCode}")
-    List<Student> getAllStudentsByCourse(String courseCode);
+    @GetMapping("/list")
+    List<Student> getAllStudentsByCourse(@RequestParam String courseCode);
 }
