@@ -19,15 +19,16 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private final String secretKeyString ;
+    @Value("${jwt_secret")
+    private String secretKeyString ;
 
     @Value("${TOKEN_EXPIRATION}")
     private long TOKEN_EXPIRATION;
 
     public JwtService() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-        SecretKey secretKey =keyGen.generateKey();
-        secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+//        KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
+//        SecretKey secretKey =keyGen.generateKey();
+//        secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 
     }
 

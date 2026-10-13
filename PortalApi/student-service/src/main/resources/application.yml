@@ -72,6 +72,7 @@ server:
 #   encryption: ssl
 
 TOKEN_EXPIRATION : 3600000
+jwt_secret: ${SECRET_KEY}
 
 logging:
   level:
