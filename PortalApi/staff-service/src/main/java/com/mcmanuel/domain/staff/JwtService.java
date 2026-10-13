@@ -3,6 +3,7 @@ package com.mcmanuel.domain.staff;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +18,13 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private final String secretKeyString ;
+    @Value("${jwt_secret}")
+    private String secretKeyString ;
 
     public JwtService() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("Hmac SHA256");
-        SecretKey secretKey =keyGen.generateKey();
-        secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
+//        KeyGenerator keyGen = KeyGenerator.getInstance("Hmac SHA256");
+//        SecretKey secretKey =keyGen.generateKey();
+//        secretKeyString = Base64.getEncoder().encodeToString(secretKey.getEncoded());
 
     }
 

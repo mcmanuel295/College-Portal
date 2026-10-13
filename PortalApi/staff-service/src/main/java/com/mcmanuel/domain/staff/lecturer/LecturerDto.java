@@ -1,4 +1,4 @@
-package com.mcmanuel.domain.lecturer;
+package com.mcmanuel.domain.staff.lecturer;
 
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Role;

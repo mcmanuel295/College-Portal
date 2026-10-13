@@ -1,4 +1,4 @@
-package com.mcmanuel.domain.lecturer;
+package com.mcmanuel.domain.staff.lecturer;
 
 class Mapper {
     public static Lecturer toLecturer(LecturerDto dto){

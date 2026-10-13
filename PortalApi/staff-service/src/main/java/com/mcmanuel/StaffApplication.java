@@ -1,7 +1,6 @@
 package com.mcmanuel;
 
-import com.mcmanuel.domain.lecturer.LecturerService;
-import com.mcmanuel.domain.staff.StaffService;
+import com.mcmanuel.domain.staff.lecturer.LecturerService;
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.exception.LecturerNotFoundException;
 import com.mcmanuel.pojo.RegisterRequest;

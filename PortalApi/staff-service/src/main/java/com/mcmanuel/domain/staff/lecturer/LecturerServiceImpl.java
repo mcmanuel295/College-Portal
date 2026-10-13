@@ -1,4 +1,4 @@
-package com.mcmanuel.domain.lecturer;
+package com.mcmanuel.domain.staff.lecturer;
 
 import com.mcmanuel.client.CourseClient;
 import com.mcmanuel.domain.staff.Staff;

@@ -1,13 +1,9 @@
-package com.mcmanuel.domain.lecturer;
+package com.mcmanuel.domain.staff.lecturer;
 
 import com.mcmanuel.domain.staff.StaffService;
 import com.mcmanuel.pojo.Grade;
 import com.mcmanuel.pojo.RegisterRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.MessagingException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package com.mcmanuel.web;
 
-import com.mcmanuel.domain.lecturer.LecturerDto;
-import com.mcmanuel.domain.lecturer.LecturerService;
+import com.mcmanuel.domain.staff.lecturer.LecturerDto;
+import com.mcmanuel.domain.staff.lecturer.LecturerService;
 import com.mcmanuel.pojo.Grade;
 import com.mcmanuel.pojo.RegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
