@@ -1,5 +1,6 @@
 package com.mcmanuel.domain.staff;
 
+import com.mcmanuel.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -21,6 +22,9 @@ public class JwtService {
     @Value("${jwt_secret}")
     private String secretKeyString ;
 
+    @Value("${TOKEN_EXPIRATION}")
+    private long TOKEN_EXPIRATION;
+
     public JwtService() throws NoSuchAlgorithmException {
 //        KeyGenerator keyGen = KeyGenerator.getInstance("Hmac SHA256");
 //        SecretKey secretKey =keyGen.generateKey();
@@ -32,17 +36,18 @@ public class JwtService {
         return Keys.hmacShaKeyFor(Base64.getDecoder().decode( secretKeyString.getBytes()));
     }
 
-
-    public String builder(String username){
+    public String generateToken(String username,Role role){
         Map<String,Object> claims = new HashMap<>();
+        claims.put("role", role.name());
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+100000L))
+                .expiration(new Date(System.currentTimeMillis()+TOKEN_EXPIRATION))
                 .signWith(key())
                 .compact();
     }
+
 
     private Claims extractClaims(String token){
         return Jwts.parser()

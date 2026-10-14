@@ -1,5 +1,6 @@
 package com.mcmanuel.domain.staff;
 
+import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Role;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
@@ -25,6 +26,8 @@ public abstract class Staff {
     private String email;
     private String phoneNumber;
 
+    private Department department;
+
 //    @Enumerated
 //    @Column(unique = true, nullable = false)
 //    private Faculty faculty;
@@ -32,6 +35,7 @@ public abstract class Staff {
     private List<Role> roles =new ArrayList<>();
     private String password;
     private LocalDateTime dateCreated;
+    private boolean isEnabled ;
     private String imageUrl;
 
     private String fullName(){

@@ -21,5 +21,5 @@ import java.util.UUID;
 class NonTeaching extends Staff {
     @Id
     @UuidGenerator
-    private UUID lecturerId;
+    private UUID nonTeachingId;
 }
