@@ -32,4 +32,6 @@ spring:
 server:
   port: 8081
 
+TOKEN_EXPIRATION : 3600000
+
 jwt_secret: ${SECRET_KEY}

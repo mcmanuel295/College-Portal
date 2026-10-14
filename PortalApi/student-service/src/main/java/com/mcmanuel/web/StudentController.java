@@ -1,8 +1,7 @@
 package com.mcmanuel.web;
 
-import com.mcmanuel.domain.result.Result;
 import com.mcmanuel.pojo.Course;
-import com.mcmanuel.domain.student.RegisterRequest;
+import com.mcmanuel.pojo.RegisterRequest;
 import com.mcmanuel.domain.student.StudentDto;
 import com.mcmanuel.domain.student.StudentService;
 import com.mcmanuel.pojo.Notification;

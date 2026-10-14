@@ -1,6 +1,6 @@
 package com.mcmanuel;
 
-import com.mcmanuel.domain.student.RegisterRequest;
+import com.mcmanuel.pojo.RegisterRequest;
 import com.mcmanuel.domain.student.StudentDto;
 import com.mcmanuel.domain.student.StudentService;
 import com.mcmanuel.enums.Department;
