@@ -339,10 +339,10 @@ public class StudentServiceImp implements StudentService {
 
     @Override
     public String login(LoginRequest loginRequest) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getMatriculationNumber(),loginRequest.getPassword());
         Authentication authentication =manager.authenticate(token);
         if(authentication.isAuthenticated()) {
-            String jwtToken = jwtService.generateToken(loginRequest.getEmail());
+            String jwtToken = jwtService.generateToken(loginRequest.getMatriculationNumber());
             System.out.println("JWT Token :"+jwtToken);
             return jwtToken;
         }

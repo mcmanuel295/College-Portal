@@ -4,6 +4,7 @@ import com.mcmanuel.domain.result.Result;
 import com.mcmanuel.pojo.Course;
 import com.mcmanuel.pojo.LoginRequest;
 import com.mcmanuel.pojo.Notification;
+import com.mcmanuel.pojo.RegisterRequest;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
