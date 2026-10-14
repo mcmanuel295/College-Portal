@@ -12,9 +12,12 @@ import java.util.List;
 
 public interface StaffController <T>{
     ResponseEntity<T> registerStaff(@RequestParam String email, @RequestBody RegisterRequest request);
+
     ResponseEntity<List<T>> findAllStaffs(@RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize);
 
     ResponseEntity<T> findStaffByStaffId(@PathVariable String staffNumber);
+
+    ResponseEntity<T> findStaffByStaffByEmail(@PathVariable String staffNumber);
 
     ResponseEntity<T> updateBio(@RequestParam String staffNumber,@RequestParam String email,@RequestParam String phoneNumber);
 
@@ -23,4 +26,6 @@ public interface StaffController <T>{
     ResponseEntity<String> activateProfile(@RequestParam String email) throws jakarta.mail.MessagingException ;
 
     ResponseEntity<String> verifyOtp(@RequestParam String email, @Valid String otp) throws MessagingException ;
+    
+    ResponseEntity<String> sendUserEmail(String email)  throws MessagingException;
 }

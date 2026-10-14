@@ -60,6 +60,16 @@ public class LecturerController implements StaffController<LecturerDto>{
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @Override
+    public ResponseEntity<LecturerDto> findStaffByStaffByEmail(String email) {
+        LecturerDto lecturerDto =service.findStaffByEmail(email);
+
+        if(lecturerDto!=null){
+            return new ResponseEntity<>(lecturerDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 
     @Operation(description = "Update Staff Bio Endpoint",summary = "Update staff bio")
     @Override
@@ -91,6 +101,11 @@ public class LecturerController implements StaffController<LecturerDto>{
             return new ResponseEntity<>("VERIFIED",HttpStatus.OK);
         }
         else return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @Override
+    public ResponseEntity<String> sendUserEmail(String email) throws MessagingException {
+        return null;
     }
 
 
