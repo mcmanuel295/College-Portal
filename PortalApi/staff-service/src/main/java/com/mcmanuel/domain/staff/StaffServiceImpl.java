@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 public abstract class  StaffServiceImpl<T> implements StaffService<T>{
     private final JwtService jwtService;
@@ -18,13 +20,17 @@ public abstract class  StaffServiceImpl<T> implements StaffService<T>{
     private final TokenService tokenService;
 
 
+
     @Override
     public String login(LoginRequest loginRequest){
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getStaffId(),loginRequest.getPassword());
         Authentication authentication =manager.authenticate(token);
         if(authentication.isAuthenticated()) {
-            Role role = loginRequest.getStaffId().substring(0,3).equalsIgnoreCase("NTS")? Role.NON_TEACHING: Role.LECTURER;
-            String jwtToken = jwtService.generateToken(loginRequest.getStaffId(),role);
+
+            List<String> roles = ((Staff)findStaffByStaffNumber(loginRequest.getStaffId())).getRoles().stream()
+                    .map(Enum::name).toList();
+
+            String jwtToken = jwtService.generateToken(loginRequest.getStaffId(),roles);
             System.out.println("JWT Token :"+jwtToken);
             return jwtToken;
         }
