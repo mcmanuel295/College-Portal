@@ -1,9 +1,8 @@
-package com.mcmanuel.domain.student;
+package com.mcmanuel.pojo;
 
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Faculty;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
