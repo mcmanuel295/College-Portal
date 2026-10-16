@@ -2,18 +2,20 @@ package com.mcmanuel.domain.staff;
 
 import com.mcmanuel.domain.token.TokenService;
 import com.mcmanuel.email.EmailService;
-import com.mcmanuel.enums.Role;
 import com.mcmanuel.pojo.LoginRequest;
+import com.mcmanuel.pojo.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 @RequiredArgsConstructor
-public abstract class  StaffServiceImpl<T> implements StaffService<T>{
+public abstract class StaffServiceImpl<T,R extends RegisterRequest> implements StaffService<T,R>{
     private final JwtService jwtService;
     private final AuthenticationManager manager;
     private final EmailService emailService;
@@ -29,7 +31,7 @@ public abstract class  StaffServiceImpl<T> implements StaffService<T>{
 
             List<String> roles = ((Staff)findStaffByStaffNumber(loginRequest.getStaffId())).getRoles().stream()
                     .map(Enum::name).toList();
-
+            System.out.println("The login staff role(s) "+roles);
             String jwtToken = jwtService.generateToken(loginRequest.getStaffId(),roles);
             System.out.println("JWT Token :"+jwtToken);
             return jwtToken;

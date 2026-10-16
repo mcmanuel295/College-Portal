@@ -3,16 +3,17 @@ package com.mcmanuel.domain.staff.lecturer;
 import com.mcmanuel.domain.staff.StaffService;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
 import com.mcmanuel.pojo.Grade;
+import com.mcmanuel.pojo.LecturerRegisterRequest;
 import com.mcmanuel.pojo.RegisterRequest;
 import org.springframework.messaging.MessagingException;
 
 import java.util.List;
 import java.util.Map;
 
-public interface LecturerService extends StaffService<LecturerDto> {
+public interface LecturerService extends StaffService<LecturerDto, LecturerRegisterRequest> {
 
     @Override
-    LecturerDto registerStaff(String email, RegisterRequest request);
+    LecturerDto registerStaff(String email, LecturerRegisterRequest request);
 
     @Override
     LecturerDto findStaffByStaffNumber(String staffNumber);

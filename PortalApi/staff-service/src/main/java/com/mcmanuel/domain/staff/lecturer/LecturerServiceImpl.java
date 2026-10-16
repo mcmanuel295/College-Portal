@@ -2,7 +2,6 @@ package com.mcmanuel.domain.staff.lecturer;
 
 import com.mcmanuel.client.CourseClient;
 import com.mcmanuel.domain.staff.JwtService;
-import com.mcmanuel.domain.staff.MyUserDetails;
 import com.mcmanuel.domain.staff.Staff;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
 import com.mcmanuel.enums.Department;
@@ -12,18 +11,14 @@ import com.mcmanuel.email.EmailService;
 import com.mcmanuel.enums.Role;
 import com.mcmanuel.exception.LecturerNotFoundException;
 import com.mcmanuel.exception.DepartmentNotFoundException;
-import com.mcmanuel.pojo.LoginRequest;
-import com.mcmanuel.pojo.RegisterRequest;
-import lombok.RequiredArgsConstructor;
+import com.mcmanuel.pojo.LecturerRegisterRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.messaging.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -32,32 +27,27 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto>implements LecturerService {
+@Transactional(rollbackFor = Exception.class)
+public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRegisterRequest> implements LecturerService {
     private final LecturerRepository lecturerRepo;
-    private final EmailService emailService;
-    private final TokenService tokenService;
     private final CourseClient courseClient;
 
     public LecturerServiceImpl(LecturerRepository lecturerRepo, EmailService emailService, TokenService tokenService, CourseClient courseClient,
                                JwtService jwtService, AuthenticationManager manager) {
         super(jwtService, manager,emailService,tokenService);
         this.lecturerRepo = lecturerRepo;
-        this.emailService = emailService;
-        this.tokenService = tokenService;
         this.courseClient = courseClient;
     }
 
     @Override
-    public LecturerDto registerStaff(String email, RegisterRequest request) {
-        LecturerRegisterRequest lecturerRequest = (LecturerRegisterRequest) request;
+    public LecturerDto registerStaff(String email, LecturerRegisterRequest request) {
         Lecturer lecturer = Lecturer.builder()
-                .staffNumber(generateStaffId(lecturerRequest.getDepartment().name()))
+                .staffNumber(generateStaffId(request.getDepartment().name()))
                 .email(email)
-                .phoneNumber(lecturerRequest.getPhoneNumber())
-                .department(lecturerRequest.getDepartment())
+                .phoneNumber(request.getPhoneNumber())
                 .dateCreated(LocalDateTime.now())
                 .roles(List.of(Role.LECTURER))
-                .department(lecturerRequest.getDepartment())
+                .department(request.getDepartment())
 //                .imageUrl(request.getFile().getOriginalFilename())
                 .build();
         lecturer.setFirstname(request.getFirstname());
@@ -76,6 +66,8 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto>implements
         Department verifiedDepartment = Department.valueOf(department);
         String end ;
 
+        getStaffList(department).forEach(System.out::println);
+        System.out.println("get staff last index "+ getStaffList(department).getLast().substring(7));
         int last_index = Integer.parseInt(getStaffList(department).isEmpty()?"00": getStaffList(department).getLast().substring(7));
         System.out.println("The last index is "+last_index);
         if(last_index <=9) {
@@ -86,7 +78,7 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto>implements
         }
         else end = String.valueOf(last_index+1);
 
-        return verifiedDepartment.getCode()+verifiedDepartment.getFaculty().getCode()+verifiedDepartment.getCode()+end;
+        return verifiedDepartment.getCode()+verifiedDepartment.getFaculty().getCode()+verifiedDepartment.getNumber()+end;
     }
 
 
@@ -99,9 +91,9 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto>implements
 
 
     @Override
-    public LecturerDto findStaffByEmail(String staffNumber) {
+    public LecturerDto findStaffByEmail(String email) {
         return Mapper.toDto(
-                (Lecturer) lecturerRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"))
+                (Lecturer) lecturerRepo.findByStaffNumber(email).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"))
         );
     }
 
@@ -137,7 +129,7 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto>implements
         }
 
         return lecturerRepo.findAll().stream()
-                .filter(lecturer -> ((Lecturer)lecturer).getDepartment().equals(Department.valueOf(department)))
+                .filter(lecturer -> lecturer.getDepartment().equals(Department.valueOf(department)))
                 .map(Staff::getStaffNumber)
                 .toList();
     }

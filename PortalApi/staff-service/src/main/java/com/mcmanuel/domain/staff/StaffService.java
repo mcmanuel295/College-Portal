@@ -6,9 +6,9 @@ import org.springframework.messaging.MessagingException;
 
 import java.util.List;
 
-public interface StaffService<T> {
+public interface StaffService<T,R extends RegisterRequest> {
     String login(LoginRequest loginRequest);
-    T registerStaff(String email,  RegisterRequest request);
+    T registerStaff(String email,  R request);
     T findStaffByStaffNumber(String staffNumber);
     T findStaffByEmail(String email);
     List<T> getAllStaffs(int pageNo, int pageSize);
