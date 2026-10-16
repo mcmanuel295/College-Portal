@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-public interface StaffController <T>{
-    ResponseEntity<T> registerStaff(@RequestParam String email, @RequestBody RegisterRequest request);
+public interface StaffController <T,R extends RegisterRequest>{
+    ResponseEntity<T> registerStaff(@RequestParam String email, @RequestBody R request);
 
     ResponseEntity<List<T>> findAllStaffs(@RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize);
 

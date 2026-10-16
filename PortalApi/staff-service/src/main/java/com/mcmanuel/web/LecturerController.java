@@ -3,7 +3,7 @@ package com.mcmanuel.web;
 import com.mcmanuel.domain.staff.lecturer.LecturerDto;
 import com.mcmanuel.domain.staff.lecturer.LecturerService;
 import com.mcmanuel.pojo.Grade;
-import com.mcmanuel.pojo.RegisterRequest;
+import com.mcmanuel.pojo.LecturerRegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -21,13 +21,13 @@ import java.util.Map;
 @RequestMapping("/lecturers")
 @RequiredArgsConstructor
 @Slf4j
-public class LecturerController implements StaffController<LecturerDto>{
+public class LecturerController implements StaffController<LecturerDto, LecturerRegisterRequest>{
     private final LecturerService service;
 
     @Override
     @PostMapping("/")
     @Operation(description="Register Staff Endpoint",summary="Staff registration")
-    public ResponseEntity<LecturerDto> registerStaff(@RequestParam String email, @RequestBody RegisterRequest request){
+    public ResponseEntity<LecturerDto> registerStaff(@RequestParam String email, @RequestBody LecturerRegisterRequest request){
         try{
             return new ResponseEntity<>(service.registerStaff(email,request),HttpStatus.CREATED);
         }
@@ -41,7 +41,7 @@ public class LecturerController implements StaffController<LecturerDto>{
     }
 
 
-    @Operation(description = "Find  All Staff Endpooint",summary = "Find all staff")
+    @Operation(description = "Find  All Staff Endpoint",summary = "Find all staff")
     @Override
     @GetMapping("/")
     public ResponseEntity<List<LecturerDto>> findAllStaffs(@RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize){

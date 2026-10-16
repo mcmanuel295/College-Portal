@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping
 @Slf4j
-public class NonTeachingController implements StaffController<NonTeachingDto> {
+public class NonTeachingController implements StaffController<NonTeachingDto,RegisterRequest> {
     private final NonTeachingService service;
 
 
