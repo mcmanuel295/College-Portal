@@ -2,14 +2,14 @@ package com.mcmanuel.pojo;
 
 import com.mcmanuel.enums.Department;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 public abstract class RegisterRequest {
     private String firstname;
     private String lastname;

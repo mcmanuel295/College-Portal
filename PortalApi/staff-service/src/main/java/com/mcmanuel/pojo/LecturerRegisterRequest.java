@@ -1,16 +1,16 @@
-package com.mcmanuel.domain.staff.lecturer;
+package com.mcmanuel.pojo;
 
 import com.mcmanuel.enums.Department;
-import com.mcmanuel.pojo.RegisterRequest;
-import jakarta.persistence.MappedSuperclass;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.stereotype.Service;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@Service
 public class LecturerRegisterRequest extends RegisterRequest {
     private Department department;
 
