@@ -3,7 +3,7 @@ package com.mcmanuel;
 import com.mcmanuel.domain.staff.lecturer.LecturerService;
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.exception.LecturerNotFoundException;
-import com.mcmanuel.pojo.RegisterRequest;
+import com.mcmanuel.pojo.LecturerRegisterRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -39,7 +39,7 @@ public class StaffApplication {
             catch (LecturerNotFoundException ex){
                 System.out.println("Lecturer Not Found, Creating initial lecturer");
                 lecturerService.registerStaff("mcmanuel755@gmail.com",
-                    RegisterRequest.builder()
+                    LecturerRegisterRequest.builder()
                             .firstname("John")
                             .lastname("Ogbu")
                             .department(Department.COMPUTER_SCIENCE)
