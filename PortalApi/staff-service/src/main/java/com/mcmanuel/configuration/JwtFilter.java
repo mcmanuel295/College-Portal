@@ -1,4 +1,4 @@
-package com.mcmanuel.config;
+package com.mcmanuel.configuration;
 
 import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.MyUserDetailsService;

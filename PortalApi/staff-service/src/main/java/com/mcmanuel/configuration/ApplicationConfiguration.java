@@ -1,4 +1,4 @@
-package com.mcmanuel.config;
+package com.mcmanuel.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
