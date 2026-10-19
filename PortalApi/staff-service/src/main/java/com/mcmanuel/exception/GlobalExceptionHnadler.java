@@ -19,8 +19,8 @@ public class GlobalExceptionHnadler {
 //    }
 
 
-    @ExceptionHandler(LecturerNotFoundException.class)
-    public ProblemDetail lecturerNotFoundException(LecturerNotFoundException ex){
+    @ExceptionHandler(StaffNotFoundException.class)
+    public ProblemDetail lecturerNotFoundException(StaffNotFoundException ex){
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,ex.getMessage());
 
         detail.setTitle("Lecturer Not Found");
