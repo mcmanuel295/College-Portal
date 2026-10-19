@@ -53,6 +53,7 @@ class Student{
     private String email;
 
     @Column(nullable = false)
+    @Pattern(regexp = "^(\\+?234 |0)(07|08|81|09|91)\\d{8}$",message = "Invalid Nigerian phone number")
     private String phoneNumber;
 
     @Enumerated
