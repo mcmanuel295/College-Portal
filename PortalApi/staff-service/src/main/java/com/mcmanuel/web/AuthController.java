@@ -1,14 +1,9 @@
 package com.mcmanuel.web;
 
-import com.mcmanuel.domain.staff.Staff;
-import com.mcmanuel.domain.staff.StaffService;
-import com.mcmanuel.domain.staff.lecturer.LecturerDto;
 import com.mcmanuel.domain.staff.lecturer.LecturerService;
-import com.mcmanuel.domain.staff.non_teaching.NonTeachingDto;
 import com.mcmanuel.domain.staff.non_teaching.NonTeachingService;
-import com.mcmanuel.pojo.LecturerRegisterRequest;
+import com.mcmanuel.enums.Status;
 import com.mcmanuel.pojo.LoginRequest;
-import com.mcmanuel.pojo.NonTeachingRegisterRequest;
 import com.mcmanuel.pojo.RegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
@@ -31,17 +26,26 @@ public class AuthController {
     @Operation(description = "Login Endpoint",summary = "Staff Login")
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest){
-        String jwtToken =lecturerService.login(loginRequest);
+        String jwtToken;
+        if(loginRequest.getStaffId().startsWith("NTS")){
+            jwtToken =nonTeachingService.login(loginRequest);
+        }
+        else
+            jwtToken = lecturerService.login(loginRequest);
+
         if(jwtToken != null){
             return ResponseEntity.ok(jwtToken);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @Operation(description = "Register staff Endpoint",summary ="Register non-teaching staff" )
-    @PostMapping("/non-teaching")
-    public ResponseEntity<NonTeachingDto> registerStaff(@RequestParam String email, @RequestBody NonTeachingRegisterRequest request){
+    @Operation(description = "Register staff Endpoint",summary ="Register staff" )
+    @PostMapping("/")
+    public ResponseEntity<Object> registerStaff(@RequestParam String email, @RequestBody RegisterRequest request){
         try{
+            if (request.getStatus()== Status.TEACHING) {
+                return new ResponseEntity<>(lecturerService.registerStaff(email,request),HttpStatus.CREATED);
+            }
             return new ResponseEntity<>(nonTeachingService.registerStaff(email,request),HttpStatus.CREATED);
         }
         catch (EntityTypeException ex){
@@ -53,20 +57,6 @@ public class AuthController {
         }
     }
 
-    @Operation(description = "Register staff Endpoint",summary ="Register staff" )
-    @PostMapping("/lecturer")
-    public ResponseEntity<LecturerDto> registerStaff(@RequestParam String email, @RequestBody LecturerRegisterRequest request){
-        try{
-            return new ResponseEntity<>(lecturerService.registerStaff(email,request),HttpStatus.CREATED);
-        }
-        catch (EntityTypeException ex){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception ex){
-            log.error(ex.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
 
     @Operation(description = "Activate Profile Endpoint",summary ="Activate Profile" )
     @PostMapping("/activate")

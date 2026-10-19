@@ -10,18 +10,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-public interface StaffController <T,R extends RegisterRequest>{
-    ResponseEntity<T> registerStaff(@RequestParam String email, @RequestBody R request);
+public interface StaffController <T>{
+    ResponseEntity<T> registerStaff(@RequestParam String email, @RequestBody RegisterRequest request);
 
     ResponseEntity<List<T>> findAllStaffs(@RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize);
 
-    ResponseEntity<T> findStaffByStaffId(@PathVariable String staffNumber);
+    ResponseEntity<T> findStaffByStaffId(@PathVariable String staffId);
 
-    ResponseEntity<T> findStaffByStaffByEmail(@PathVariable String staffNumber);
+    ResponseEntity<T> findStaffByStaffByEmail(@PathVariable String staffId);
 
-    ResponseEntity<T> updateBio(@RequestParam String staffNumber,@RequestParam String email,@RequestParam String phoneNumber);
+    ResponseEntity<T> updateBio(@RequestParam String staffId,@RequestParam String email,@RequestParam String phoneNumber);
 
-    ResponseEntity<Boolean> deleteStaff(String staffNumber);
+    ResponseEntity<String> makeAdmin(@PathVariable String staffId);
+
+    ResponseEntity<String> removeAdmin(@PathVariable String staffId);
+
+    ResponseEntity<Boolean> deleteStaff(String staffId);
 
     ResponseEntity<String> activateProfile(@RequestParam String email) throws jakarta.mail.MessagingException ;
 
