@@ -123,7 +123,7 @@ public class CourseController {
 
     @Operation(description = "Get assigned lecturer", summary = "Get assigned lecturer to course")
     @PostMapping("/{courseCode}/assigned-lecturers")
-    ResponseEntity<List<Lecturer>> getAssignedLecturers(@PathVariable String courseCode){
+    ResponseEntity<List<Lecturer>> getAssignedLecturers(@RequestParam String courseCode){
         List<Lecturer> lecturers = courseService.getAssignedLecturers(courseCode);
         if (lecturers == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -133,8 +133,8 @@ public class CourseController {
 
     @Operation(description = "Assign lecturer", summary = "Assigns lecturer to  course")
     @PostMapping("/{courseCode}/assign-lecturer")
-    ResponseEntity<String> assignedLecturers(@PathVariable String courseCode,@RequestBody List<String> staffNumbers){
-        String lecturers = courseService.assignedLecturers(courseCode,staffNumbers);
+    ResponseEntity<String> assignedLecturers(@PathVariable String courseCode,@RequestBody List<String> staffId){
+        String lecturers = courseService.assignedLecturers(courseCode,staffId);
         if (lecturers == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
