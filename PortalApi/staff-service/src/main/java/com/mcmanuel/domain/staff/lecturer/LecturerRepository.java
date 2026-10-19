@@ -7,5 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface LecturerRepository extends JpaRepository<Lecturer, UUID> {
-    Optional<Staff> findByStaffNumber(String staffNumber);
+    Optional<Staff> findByStaffId(String staffId);
+
+    Optional<Staff>  findByEmail(String email);
 }

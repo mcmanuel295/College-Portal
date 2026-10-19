@@ -24,7 +24,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return staff.getStaffNumber();
+        return staff.getStaffId();
     }
 
     @Override

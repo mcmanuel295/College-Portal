@@ -5,53 +5,68 @@ import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.Staff;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
 import com.mcmanuel.enums.Department;
+import com.mcmanuel.enums.Status;
 import com.mcmanuel.pojo.Grade;
 import com.mcmanuel.domain.token.TokenService;
 import com.mcmanuel.email.EmailService;
 import com.mcmanuel.enums.Role;
-import com.mcmanuel.exception.LecturerNotFoundException;
+import com.mcmanuel.exception.StaffNotFoundException;
 import com.mcmanuel.exception.DepartmentNotFoundException;
-import com.mcmanuel.pojo.LecturerRegisterRequest;
+import com.mcmanuel.pojo.RegisterRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRegisterRequest> implements LecturerService {
+public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implements LecturerService {
     private final LecturerRepository lecturerRepo;
     private final CourseClient courseClient;
+    private final PasswordEncoder passwordEncoder;
 
     public LecturerServiceImpl(LecturerRepository lecturerRepo, EmailService emailService, TokenService tokenService, CourseClient courseClient,
-                               JwtService jwtService, AuthenticationManager manager) {
+                               JwtService jwtService, AuthenticationManager manager, PasswordEncoder passwordEncoder) {
         super(jwtService, manager,emailService,tokenService);
         this.lecturerRepo = lecturerRepo;
         this.courseClient = courseClient;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public LecturerDto registerStaff(String email, LecturerRegisterRequest request) {
+    public LecturerDto registerStaff(String email, RegisterRequest request) {
+        if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Password mismatch");
+        }
+        if(request.getStatus()== null || (request.getStatus()!= Status.TEACHING && request.getStatus()!= Status.NON_TEACHING )){
+            throw new RuntimeException("Empty or Invalid category: Either teaching or non-teaching");
+        }
+
         Lecturer lecturer = Lecturer.builder()
-                .staffNumber(generateStaffId(request.getDepartment().name()))
+                .staffId(generateStaffId(request.getDepartment().name()))
                 .email(email)
+                .roles(new ArrayList<>())
                 .phoneNumber(request.getPhoneNumber())
                 .dateCreated(LocalDateTime.now())
-                .roles(List.of(Role.LECTURER))
                 .department(request.getDepartment())
 //                .imageUrl(request.getFile().getOriginalFilename())
                 .build();
+
+        if (request.getStatus() == Status.TEACHING){
+            lecturer.setRoles(List.of(Role.LECTURER));
+        }
+
         lecturer.setFirstname(request.getFirstname());
         lecturer.setLastname(request.getLastname());
+        lecturer.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
         lecturer.setEnabled(true);
         return Mapper.toDto(lecturerRepo.save(lecturer));
     }
@@ -67,9 +82,7 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRe
         String end ;
 
         getStaffList(department).forEach(System.out::println);
-        System.out.println("get staff last index "+ getStaffList(department).getLast().substring(7));
         int last_index = Integer.parseInt(getStaffList(department).isEmpty()?"00": getStaffList(department).getLast().substring(7));
-        System.out.println("The last index is "+last_index);
         if(last_index <=9) {
             end = "00"+(last_index+1);
         }
@@ -83,9 +96,9 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRe
 
 
     @Override
-    public LecturerDto findStaffByStaffNumber(String staffNumber) {
+    public LecturerDto findStaffByStaffId(String staffNumber) {
         return Mapper.toDto(
-                (Lecturer) lecturerRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"))
+                (Lecturer) lecturerRepo.findByStaffId(staffNumber).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"))
         );
     }
 
@@ -93,7 +106,7 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRe
     @Override
     public LecturerDto findStaffByEmail(String email) {
         return Mapper.toDto(
-                (Lecturer) lecturerRepo.findByStaffNumber(email).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"))
+                (Lecturer) lecturerRepo.findByEmail(email).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"))
         );
     }
 
@@ -101,13 +114,13 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRe
     public List<LecturerDto> getAllStaffs(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("staffId"));
         return lecturerRepo.findAll(pageable).stream()
-                .map(lecturer -> Mapper.toDto((Lecturer)lecturer))
+                .map(Mapper::toDto)
                 .toList();
     }
 
     @Override
-    public LecturerDto updateBio(String staffNumber, String email,String phoneNumber) {
-        Lecturer lecturer= (Lecturer) lecturerRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"));
+    public LecturerDto updateBio(String staffId, String email,String phoneNumber) {
+        Lecturer lecturer= (Lecturer) lecturerRepo.findByStaffId(staffId).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"));
         lecturer.setEmail(email);
         lecturer.setPhoneNumber(phoneNumber);
         return Mapper.toDto(lecturerRepo.save(lecturer));
@@ -115,7 +128,7 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRe
 
     @Override
     public boolean deleteStaff(String staffNumber) {
-        Lecturer lecturer = (Lecturer) lecturerRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"));
+        Lecturer lecturer = (Lecturer) lecturerRepo.findByStaffId(staffNumber).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"));
         lecturerRepo.delete(lecturer);
         return true;
     }
@@ -130,8 +143,34 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto,LecturerRe
 
         return lecturerRepo.findAll().stream()
                 .filter(lecturer -> lecturer.getDepartment().equals(Department.valueOf(department)))
-                .map(Staff::getStaffNumber)
+                .map(Staff::getStaffId)
                 .toList();
+    }
+
+    @Override
+    public String makeAdmin(String staffId) {
+        Lecturer lecturer = (Lecturer) lecturerRepo.findByStaffId(staffId).orElseThrow(() -> new StaffNotFoundException("Lecturer with Id Not Found "+staffId));
+
+        if (lecturer.getRoles().contains(Role.ADMIN)){
+            return "Already an Admin";
+        }
+        lecturer.getRoles().add(Role.ADMIN);
+
+        lecturerRepo.save(lecturer);
+        return staffId+"'s role Updated to Admin";
+    }
+
+    @Override
+    public String removeAdmin(String staffId) {
+        Lecturer lecturer = (Lecturer) lecturerRepo.findByStaffId(staffId).orElseThrow(() -> new StaffNotFoundException("Lecturer with Id Not Found "+staffId));
+
+        if (lecturer.getRoles().contains(Role.ADMIN)){
+            return "Not an Admin";
+        }
+        lecturer.getRoles().add(Role.ADMIN);
+
+        lecturerRepo.save(lecturer);
+        return staffId+"'s role Updated to Admin";
     }
 
     @Override

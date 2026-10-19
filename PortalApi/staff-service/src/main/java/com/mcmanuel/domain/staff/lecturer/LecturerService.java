@@ -1,22 +1,20 @@
 package com.mcmanuel.domain.staff.lecturer;
 
 import com.mcmanuel.domain.staff.StaffService;
-import com.mcmanuel.domain.staff.StaffServiceImpl;
 import com.mcmanuel.pojo.Grade;
-import com.mcmanuel.pojo.LecturerRegisterRequest;
 import com.mcmanuel.pojo.RegisterRequest;
 import org.springframework.messaging.MessagingException;
 
 import java.util.List;
 import java.util.Map;
 
-public interface LecturerService extends StaffService<LecturerDto, LecturerRegisterRequest> {
+public interface LecturerService extends StaffService<LecturerDto> {
 
     @Override
-    LecturerDto registerStaff(String email, LecturerRegisterRequest request);
+    LecturerDto registerStaff(String email, RegisterRequest request);
 
     @Override
-    LecturerDto findStaffByStaffNumber(String staffNumber);
+    LecturerDto findStaffByStaffId(String staffId);
 
     @Override
     LecturerDto findStaffByEmail(String email);
@@ -25,10 +23,10 @@ public interface LecturerService extends StaffService<LecturerDto, LecturerRegis
     List<LecturerDto> getAllStaffs(int pageNo, int pageSize);
 
     @Override
-    LecturerDto updateBio(String staffNumber,String email,String phoneNumber);
+    LecturerDto updateBio(String staffId,String email,String phoneNumber);
 
     @Override
-    boolean deleteStaff(String staffNumber);
+    boolean deleteStaff(String staffId);
 
     @Override
     void sendUserEmail(String email) throws MessagingException, jakarta.mail.MessagingException;

@@ -14,6 +14,7 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 class Lecturer extends Staff {

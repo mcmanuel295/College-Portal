@@ -17,11 +17,11 @@ public class MyUserDetailsService implements UserDetailsService{
     private final NonTeachingRepository nonTeachingRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String staffNumber) throws UsernameNotFoundException {
-        Optional<Staff> staff = staffNumber.substring(0,3).equalsIgnoreCase("NTS")? nonTeachingRepo.findByStaffNumber(staffNumber): lecturerRepo.findByStaffNumber(staffNumber);
+    public UserDetails loadUserByUsername(String staffId) throws UsernameNotFoundException {
+        Optional<Staff> staff = staffId.substring(0,3).equalsIgnoreCase("NTS")? nonTeachingRepo.findByStaffId(staffId): lecturerRepo.findByStaffId(staffId);
 
         if (staff.isEmpty()) {
-            throw new UsernameNotFoundException("Staff Number Not Found "+staffNumber);
+            throw new UsernameNotFoundException("Staff with Id Not Found "+staffId);
         }
 
         return new MyUserDetails(staff.get());

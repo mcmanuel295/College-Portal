@@ -40,7 +40,7 @@ public record LecturerDto (
         Set<String> courses,
 
         @Column(nullable = false)
-        List<Role> role,
+        List<Role> roles,
 
         @Column(nullable = false)
         LocalDateTime dateCreated,

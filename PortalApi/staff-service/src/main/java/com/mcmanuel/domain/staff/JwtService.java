@@ -66,7 +66,7 @@ public class JwtService {
 
 
     public boolean verify(UserDetails userDetails, String token) {
-        return userDetails.getUsername().equals(extractUsername(token)) && extractExpirationDate(token).before(new Date());
+        return userDetails.getUsername().equals(extractUsername(token)) && extractExpirationDate(token).after(new Date());
     }
 
     private Date extractExpirationDate(String token){
