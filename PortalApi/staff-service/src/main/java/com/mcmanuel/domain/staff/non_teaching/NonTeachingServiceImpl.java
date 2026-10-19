@@ -7,9 +7,10 @@ import com.mcmanuel.domain.token.TokenService;
 import com.mcmanuel.email.EmailService;
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Role;
+import com.mcmanuel.enums.Status;
 import com.mcmanuel.exception.DepartmentNotFoundException;
-import com.mcmanuel.exception.LecturerNotFoundException;
-import com.mcmanuel.pojo.NonTeachingRegisterRequest;
+import com.mcmanuel.exception.StaffNotFoundException;
+import com.mcmanuel.pojo.RegisterRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,31 +19,44 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto, NonTeachingRegisterRequest> implements NonTeachingService{
+public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> implements NonTeachingService{
     private final NonTeachingRepository nonTeachingRepo;
 
-    public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService, NonTeachingRepository nonTeachingRepo, NonTeachingRepository nonTeachingRepo1) {
+    public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService, NonTeachingRepository nonTeachingRepo1) {
         super(jwtService, manager, emailService, tokenService);
         this.nonTeachingRepo = nonTeachingRepo1;
     }
 
 
     @Override
-    public NonTeachingDto registerStaff(String email, NonTeachingRegisterRequest request) {
+    public NonTeachingDto registerStaff(String email, RegisterRequest request) {
+        if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Password mismatch");
+        }
+        if(request.getStatus()== null || (request.getStatus() == Status.TEACHING || request.getStatus() != Status.NON_TEACHING )){
+            throw new RuntimeException("Empty or Invalid category: Either teaching or non-teaching");
+        }
+
         NonTeaching nonTeachingStaff = NonTeaching.builder()
-                .staffNumber(generateStaffId(request.getDepartment().name()))
+                .staffId(generateStaffId(request.getDepartment().name()))
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
                 .department(request.getDepartment())
                 .dateCreated(LocalDateTime.now())
-                .roles(List.of(Role.NON_TEACHING))
-
                 .build();
+
+        if (request.getStatus() ==Status.TEACHING){
+            ArrayList<Role> roles = new ArrayList<>();
+            roles.add(Role.LECTURER);
+            nonTeachingStaff.setRoles(roles);
+        }
+
         nonTeachingStaff.setFirstname(request.getFirstname());
         nonTeachingStaff.setLastname(request.getLastname());
         nonTeachingStaff.setEnabled(true);
@@ -79,16 +93,16 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto, Non
 
 
     @Override
-    public NonTeachingDto findStaffByStaffNumber(String staffNumber) {
+    public NonTeachingDto findStaffByStaffId(String staffId) {
         return Mapper.toDto(
-                (NonTeaching) nonTeachingRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"))
+                (NonTeaching) nonTeachingRepo.findByStaffId(staffId).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"))
         );
     }
 
     @Override
     public NonTeachingDto findStaffByEmail(String email) {
         return Mapper.toDto(
-                (NonTeaching) nonTeachingRepo.findByStaffNumber(email).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"))
+                (NonTeaching) nonTeachingRepo.findByStaffId(email).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"))
         );
     }
 
@@ -96,21 +110,21 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto, Non
     public List<NonTeachingDto> getAllStaffs(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("staffId"));
         return nonTeachingRepo.findAll(pageable).stream()
-                .map(nonTeaching -> Mapper.toDto((NonTeaching) nonTeaching))
+                .map(Mapper::toDto)
                 .toList();
     }
 
     @Override
-    public NonTeachingDto updateBio(String staffNumber, String email, String phoneNumber) {
-        NonTeaching nonTeaching= (NonTeaching) nonTeachingRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"));
+    public NonTeachingDto updateBio(String staffId, String email, String phoneNumber) {
+        NonTeaching nonTeaching= (NonTeaching) nonTeachingRepo.findByStaffId(staffId).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"));
         nonTeaching.setEmail(email);
         nonTeaching.setPhoneNumber(phoneNumber);
         return Mapper.toDto(nonTeachingRepo.save(nonTeaching));
     }
 
     @Override
-    public boolean deleteStaff(String staffNumber) {
-        NonTeaching nonTeaching = (NonTeaching) nonTeachingRepo.findByStaffNumber(staffNumber).orElseThrow(()-> new LecturerNotFoundException("Lecturer Not Found"));
+    public boolean deleteStaff(String staffId) {
+        NonTeaching nonTeaching = (NonTeaching) nonTeachingRepo.findByStaffId(staffId).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"));
         nonTeachingRepo.delete(nonTeaching);
         return true;
     }
@@ -124,7 +138,33 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto, Non
 
         return nonTeachingRepo.findAll().stream()
                 .filter(nonTeaching -> ((NonTeaching)nonTeachingRepo).getDepartment().equals(Department.valueOf(department)))
-                .map(Staff::getStaffNumber)
+                .map(Staff::getStaffId)
                 .toList();
+    }
+
+    @Override
+    public String makeAdmin(String staffId) {
+        NonTeaching nonTeaching = (NonTeaching) nonTeachingRepo.findByStaffId(staffId).orElseThrow(() -> new StaffNotFoundException("Lecturer with Id Not Found "+staffId));
+
+        if (nonTeaching.getRoles().contains(Role.ADMIN)){
+            return "Already an Admin";
+        }
+        nonTeaching.getRoles().add(Role.ADMIN);
+
+        nonTeachingRepo.save(nonTeaching);
+        return staffId+"'s role Updated to Admin";
+    }
+
+    @Override
+    public String removeAdmin(String staffId) {
+        NonTeaching nonTeaching = (NonTeaching) nonTeachingRepo.findByStaffId(staffId).orElseThrow(() -> new StaffNotFoundException("Lecturer with Id Not Found "+staffId));
+
+        if (nonTeaching.getRoles().contains(Role.ADMIN)){
+            return "Not an Admin";
+        }
+        nonTeaching.getRoles().add(Role.ADMIN);
+
+        nonTeachingRepo.save(nonTeaching);
+        return staffId+"'s role Updated to Admin";
     }
 }

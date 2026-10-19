@@ -30,7 +30,7 @@ public record NonTeachingDto (
         String phoneNumber,
 
         @Column(nullable = false)
-        List<Role> role,
+        List<Role> roles,
 
         @Column(nullable = false)
         LocalDateTime dateCreated,

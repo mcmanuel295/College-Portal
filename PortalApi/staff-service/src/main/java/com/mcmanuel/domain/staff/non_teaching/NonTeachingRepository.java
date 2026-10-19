@@ -7,5 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface NonTeachingRepository extends JpaRepository<NonTeaching, UUID> {
-    Optional<Staff> findByStaffNumber(String staffNumber);
+    Optional<Staff> findByStaffId(String staffNumber);
+    Optional<Staff> findByEmail(String email);
 }

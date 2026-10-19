@@ -1,19 +1,18 @@
 package com.mcmanuel.domain.staff.non_teaching;
 
 import com.mcmanuel.domain.staff.StaffService;
-import com.mcmanuel.pojo.NonTeachingRegisterRequest;
 import com.mcmanuel.pojo.RegisterRequest;
 import org.springframework.messaging.MessagingException;
 
 import java.util.List;
 
-public interface NonTeachingService extends StaffService<NonTeachingDto,NonTeachingRegisterRequest> {
+public interface NonTeachingService extends StaffService<NonTeachingDto> {
 
     @Override
-    NonTeachingDto registerStaff(String email, NonTeachingRegisterRequest request);
+    NonTeachingDto registerStaff(String email, RegisterRequest request);
 
     @Override
-    NonTeachingDto findStaffByStaffNumber(String staffNumber);
+    NonTeachingDto findStaffByStaffId(String staffNumber);
 
     @Override
     NonTeachingDto findStaffByEmail(String email);
