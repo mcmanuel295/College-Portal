@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 ) ,
                 title = "Open API Specification",
                 description = "Open API Documentation for Spring Project",
-                summary = "The API documentation for student service"
+                summary = "The API documentation for staff service"
         ),
         servers = {
                 @Server(
