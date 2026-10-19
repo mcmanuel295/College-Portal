@@ -202,7 +202,7 @@ public class StudentController {
         return ResponseEntity.ok(notifications);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT')")
+    @PreAuthorize("hasAnyRole('ADMIN','STUDENT')")
     @Operation(description = "Get CGPA",summary = "Get CGPA")
     @GetMapping("/{matriculationNumber}/cgpa")
     ResponseEntity<String> getCGPA(@PathVariable String matriculationNumber){
@@ -213,8 +213,8 @@ public class StudentController {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN') or hasROLE('STUDENT')")
-    @Operation(description = "Get GPA",summary = "Get CGPA")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT')")
+    @Operation(description = "Get GPA",summary = "Get GPA")
     @GetMapping("/{matriculationNumber}/gpa")
     ResponseEntity<String> getGPA(@PathVariable String matriculationNumber){
         var gpa =service.getGPA(matriculationNumber);

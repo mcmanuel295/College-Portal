@@ -129,13 +129,13 @@ public class CourseServiceImp implements CourseService {
     public  List<Lecturer> getAssignedLecturers(String courseCode){
         CourseDto dto= Mapper.toDto(courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found")));
         return dto.assignedLecturers().stream()
-                .map(lecturerClient::findLecturerByStaffId).toList();
+                .map(lecturerClient::findStaffByStaffId).toList();
     }
 
     @Override
     public String assignedLecturers(String courseCode,List<String> staffNumbers) {
         Optional<String> invalidStaffId = staffNumbers.stream()
-                .filter(staffNumber -> lecturerClient.findLecturerByStaffId(staffNumber) == null)
+                .filter(staffNumber -> lecturerClient.findStaffByStaffId(staffNumber) == null)
                 .findAny();
         if (invalidStaffId.isPresent()) {
             throw new RuntimeException("one or more invalid staff Id");
@@ -151,14 +151,14 @@ public class CourseServiceImp implements CourseService {
   @Override
     public String unAssignedLecturers(String courseCode,List<String> staffNumbers) {
       Optional<String> invalidStaffId = staffNumbers.stream()
-              .filter(staffNumber -> lecturerClient.findLecturerByStaffId(staffNumber) == null)
+              .filter(staffNumber -> lecturerClient.findStaffByStaffId(staffNumber) == null)
               .findAny();
       if (invalidStaffId.isPresent()) {
           throw new RuntimeException("one or more invalid staff Id");
       }
       Course course= courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
 
-      if(course.getAssignedLecturers().stream().anyMatch((id)-> lecturerClient.findLecturerByStaffId(id) !=null) ){
+      if(course.getAssignedLecturers().stream().anyMatch((id)-> lecturerClient.findStaffByStaffId(id) !=null) ){
          course.getAssignedLecturers().forEach((staffId) -> course.getAssignedLecturers().remove(staffId));
       }
       courseRepo.save(course);

@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface LecturerClient {
 
     @PostMapping("/{staffNumber}")
-    Lecturer findLecturerByStaffId(@PathVariable String staffNumber);
+    Lecturer findStaffByStaffId(@PathVariable String staffId);
 }
