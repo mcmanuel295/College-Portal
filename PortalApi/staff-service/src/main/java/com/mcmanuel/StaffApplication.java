@@ -2,8 +2,9 @@ package com.mcmanuel;
 
 import com.mcmanuel.domain.staff.lecturer.LecturerService;
 import com.mcmanuel.enums.Department;
-import com.mcmanuel.exception.LecturerNotFoundException;
-import com.mcmanuel.pojo.LecturerRegisterRequest;
+import com.mcmanuel.enums.Status;
+import com.mcmanuel.exception.StaffNotFoundException;
+import com.mcmanuel.pojo.RegisterRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -36,18 +37,20 @@ public class StaffApplication {
                 lecturerService.findStaffByEmail("mcmanuel755@gmail.com");
                 System.out.println("Lecturer already initialized");
             }
-            catch (LecturerNotFoundException ex){
+            catch (StaffNotFoundException ex){
                 System.out.println("Lecturer Not Found, Creating initial lecturer");
                 lecturerService.registerStaff("mcmanuel755@gmail.com",
-                    LecturerRegisterRequest.builder()
+                    RegisterRequest.builder()
                             .firstname("John")
                             .lastname("Ogbu")
+                            .status(Status.TEACHING)
                             .department(Department.COMPUTER_SCIENCE)
                             .phoneNumber("09081199688")
                             .createPassword("1234")
                             .confirmPassword("1234")
                             .build()
             );
+                lecturerService.makeAdmin("CSC0805001");
         }
     };
 }
