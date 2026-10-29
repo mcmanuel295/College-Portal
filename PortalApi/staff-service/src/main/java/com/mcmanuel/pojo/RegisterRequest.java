@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -20,5 +21,5 @@ public class RegisterRequest {
     private Status status;
     private String createPassword;
     private String confirmPassword;
-    //    private MultipartFile file;
+    private MultipartFile file;
 }
