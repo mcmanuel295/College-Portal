@@ -8,13 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -39,7 +35,7 @@ public class JwtService {
 
     public String generateToken(String username){
         Map<String,Object> claims = new HashMap<>();
-        claims.put("role", Role.STUDENT.name());
+        claims.put("roles", Role.STUDENT.name());
         return Jwts.builder()
                 .claims(claims)
                 .subject(username)
@@ -49,7 +45,7 @@ public class JwtService {
                 .compact();
     }
 
-    private Claims extractClaims(String token){
+    private Claims extractAllClaims(String token){
         return Jwts.parser()
                 .verifyWith(key())
                 .build()
@@ -59,7 +55,7 @@ public class JwtService {
     }
 
     private  <T> T extractClaim(String token,Function<Claims,T> claimResolver){
-       return claimResolver.apply(extractClaims(token));
+       return claimResolver.apply(extractAllClaims(token));
     }
 
 
@@ -67,6 +63,15 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public List<String> extractRoles(String token){
+        List<?> roles = extractClaim(token,claims -> claims.get("roles",List.class));
+        if (roles ==null){
+            return List.of();
+        }
+        return roles.stream()
+                .map(String::valueOf)
+                .toList();
+    }
 
     public boolean verify(UserDetails userDetails, String token) {
         return userDetails.getUsername().equals(extractUsername(token)) && !extractExpirationDate(token).before(new Date());

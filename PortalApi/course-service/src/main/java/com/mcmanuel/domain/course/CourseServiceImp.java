@@ -1,20 +1,14 @@
 package com.mcmanuel.domain.course;
 
-import com.mcmanuel.client.LecturerClient;
+import com.mcmanuel.client.StaffClient;
 import com.mcmanuel.client.StudentClient;
-import com.mcmanuel.configuration.ApplicationConfiguration;
 import com.mcmanuel.domain.grade.Grade;
 import com.mcmanuel.domain.grade.GradeRepository;
 import com.mcmanuel.pojo.Student;
-import com.mcmanuel.enums.Level;
 import com.mcmanuel.exception.CourseNotFoundException;
 import com.mcmanuel.pojo.Lecturer;
-import jakarta.persistence.PrePersist;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -31,7 +25,7 @@ public class CourseServiceImp implements CourseService {
     private final CourseRepository courseRepo;
     private final KafkaTemplate<String,Object> template;
     private final StudentClient studentClient;
-    private final LecturerClient lecturerClient;
+    private final StaffClient staffClient;
     private final GradeRepository gradeRepo;
 
 
@@ -95,6 +89,8 @@ public class CourseServiceImp implements CourseService {
         return true;
     }
 
+
+//    This uses student client
     @Override
     public List<String> getCourseStudents(String courseCode ) {
         Course course = courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()-> new CourseNotFoundException("Course Not Found"));
@@ -125,40 +121,46 @@ public class CourseServiceImp implements CourseService {
         return "student graded";
     }
 
+
+//    This uses staff client
     @Override
     public  List<Lecturer> getAssignedLecturers(String courseCode){
-        CourseDto dto= Mapper.toDto(courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found")));
+        CourseDto dto= Mapper.toDto(courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found")));
         return dto.assignedLecturers().stream()
-                .map(lecturerClient::findStaffByStaffId).toList();
+                .map(staffClient::findStaffByStaffId).toList();
     }
 
+
+//    This uses staff client
     @Override
     public String assignedLecturers(String courseCode,List<String> staffNumbers) {
         Optional<String> invalidStaffId = staffNumbers.stream()
-                .filter(staffNumber -> lecturerClient.findStaffByStaffId(staffNumber) == null)
+                .filter(staffNumber -> staffClient.findStaffByStaffId(staffNumber) == null)
                 .findAny();
         if (invalidStaffId.isPresent()) {
             throw new RuntimeException("one or more invalid staff Id");
         }
 
-        Course course= courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+        Course course= courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
         course.setAssignedLecturers(staffNumbers);
         courseRepo.save(course);
         return "lecturers assigned";
     }
 
 
+
+//    This uses staff client
   @Override
     public String unAssignedLecturers(String courseCode,List<String> staffNumbers) {
       Optional<String> invalidStaffId = staffNumbers.stream()
-              .filter(staffNumber -> lecturerClient.findStaffByStaffId(staffNumber) == null)
+              .filter(staffNumber -> staffClient.findStaffByStaffId(staffNumber) == null)
               .findAny();
       if (invalidStaffId.isPresent()) {
           throw new RuntimeException("one or more invalid staff Id");
       }
-      Course course= courseRepo.findByCourseTitle(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
+      Course course= courseRepo.findByCourseCode(courseCode.toUpperCase()).orElseThrow(()->new CourseNotFoundException("Course Not Found"));
 
-      if(course.getAssignedLecturers().stream().anyMatch((id)-> lecturerClient.findStaffByStaffId(id) !=null) ){
+      if(course.getAssignedLecturers().stream().anyMatch((id)-> staffClient.findStaffByStaffId(id) !=null) ){
          course.getAssignedLecturers().forEach((staffId) -> course.getAssignedLecturers().remove(staffId));
       }
       courseRepo.save(course);

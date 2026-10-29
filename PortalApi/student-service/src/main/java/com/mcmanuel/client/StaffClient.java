@@ -1,5 +1,6 @@
 package com.mcmanuel.client;
 
+import com.mcmanuel.pojo.Staff;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,5 +9,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface StaffClient {
 
     @GetMapping("?")
-    Stafff indStaffByStaffId(@PathVariable String staffId);
+    Staff findStaffByStaffId(@PathVariable String staffId);
 }

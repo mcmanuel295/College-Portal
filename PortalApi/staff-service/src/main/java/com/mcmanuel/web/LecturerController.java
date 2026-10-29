@@ -54,7 +54,7 @@ public class LecturerController implements StaffController<LecturerDto>{
     @PreAuthorize("hasAnyRole('ADMIN','LECTURER')")
     @Operation(description = "Find Staff By StaffId Endpoint",summary ="Find Staff By StaffId" )
     @Override
-    @PostMapping("/{staffId}")
+    @GetMapping("/{staffId}")
     public ResponseEntity<LecturerDto> findStaffByStaffId(@PathVariable String staffId){
         LecturerDto lecturerDto =service.findStaffByStaffId(staffId);
 
@@ -105,7 +105,7 @@ public class LecturerController implements StaffController<LecturerDto>{
 
     @Operation(description = "Update Staff Bio Endpoint",summary = "Update staff bio")
     @Override
-    @PutMapping("/update")
+    @PatchMapping("/update")
     @PreAuthorize("hasAnyRole('ADMIN','LECTURER')")
     public ResponseEntity<LecturerDto> updateBio(@RequestParam String staffId,@RequestParam String email,@RequestParam String phoneNumber){
         return new ResponseEntity<>(service.updateBio(staffId,email,phoneNumber), HttpStatus.OK);

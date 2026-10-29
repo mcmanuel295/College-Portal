@@ -73,7 +73,7 @@ server:
 
 TOKEN_EXPIRATION : 3600000
 jwt_secret: ${SECRET_KEY}
-
+google_gemini_key: ${GEMINI_KEY}
 logging:
   level:
     org.springframework:
