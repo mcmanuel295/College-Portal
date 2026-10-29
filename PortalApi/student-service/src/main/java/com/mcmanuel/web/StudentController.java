@@ -107,7 +107,7 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT')")
     @Operation(description = "Update Student Endpoint",summary ="Update Student" )
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<StudentDto> updateBio(@RequestParam String matricNumber,@RequestParam String email,@RequestParam String phoneNumber){
         return new ResponseEntity<>(service.updateBio(matricNumber,email,phoneNumber), HttpStatus.OK);
     }
