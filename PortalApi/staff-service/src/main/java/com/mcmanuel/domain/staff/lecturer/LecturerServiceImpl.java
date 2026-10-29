@@ -1,6 +1,7 @@
 package com.mcmanuel.domain.staff.lecturer;
 
 import com.mcmanuel.client.CourseClient;
+import com.mcmanuel.domain.staff.AwsService;
 import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.Staff;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
@@ -32,44 +33,50 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
     private final LecturerRepository lecturerRepo;
     private final CourseClient courseClient;
     private final PasswordEncoder passwordEncoder;
+    private final AwsService awsService;
 
     public LecturerServiceImpl(LecturerRepository lecturerRepo, EmailService emailService, TokenService tokenService, CourseClient courseClient,
-                               JwtService jwtService, AuthenticationManager manager, PasswordEncoder passwordEncoder) {
+                               JwtService jwtService, AuthenticationManager manager, PasswordEncoder passwordEncoder, AwsService awsService) {
         super(jwtService, manager,emailService,tokenService);
         this.lecturerRepo = lecturerRepo;
         this.courseClient = courseClient;
         this.passwordEncoder = passwordEncoder;
+        this.awsService = awsService;
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public LecturerDto registerStaff(String email, RegisterRequest request) {
         if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Password mismatch");
         }
-        if(request.getStatus()== null || (request.getStatus()!= Status.TEACHING && request.getStatus()!= Status.NON_TEACHING )){
-            throw new RuntimeException("Empty or Invalid category: Either teaching or non-teaching");
-        }
 
-        Lecturer lecturer = Lecturer.builder()
-                .staffId(generateStaffId(request.getDepartment().name()))
-                .email(email)
-                .roles(new ArrayList<>())
-                .phoneNumber(request.getPhoneNumber())
-                .dateCreated(LocalDateTime.now())
-                .department(request.getDepartment())
-//                .imageUrl(request.getFile().getOriginalFilename())
-                .build();
+        if(request.getStatus() == Status.TEACHING){
+            String photoName = request.getLastname()+"_"+request.getFirstname()+"_passport";
 
-        if (request.getStatus() == Status.TEACHING){
+
+            Lecturer lecturer = Lecturer.builder()
+                    .staffId(generateStaffId(request.getDepartment().name()))
+                    .email(email)
+                    .roles(new ArrayList<>())
+                    .phoneNumber(request.getPhoneNumber())
+                    .dateCreated(LocalDateTime.now())
+                    .department(request.getDepartment())
+                    .imageUrl( awsService.uploadPhoto(request.getFile(),photoName))
+
+                    .build();
+
             lecturer.setRoles(List.of(Role.LECTURER));
+            lecturer.setFirstname(request.getFirstname());
+            lecturer.setLastname(request.getLastname());
+            lecturer.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
+            lecturer.setEnabled(true);
+            return Mapper.toDto(lecturerRepo.save(lecturer));
         }
-
-        lecturer.setFirstname(request.getFirstname());
-        lecturer.setLastname(request.getLastname());
-        lecturer.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        lecturer.setEnabled(true);
-        return Mapper.toDto(lecturerRepo.save(lecturer));
+        else throw new RuntimeException("Invalid Staff Status");
     }
+
 
     private String generateStaffId(String department) {
 //        CSC0805008
@@ -193,17 +200,4 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
         return courseClient.gradeStudents(courseCode,grades);
     }
 
-
-//    @Override
-//    public String login(LoginRequest loginRequest) {
-//        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword());
-//        Authentication authentication =manager.authenticate(token);
-//        if(authentication.isAuthenticated()) {
-//
-//            String jwtToken = jwtService.generateToken(loginRequest.getEmail());
-//            System.out.println("JWT Token :"+jwtToken);
-//            return jwtToken;
-//        }
-//        else throw new RuntimeException("Invalid Login request");
-//    }
 }

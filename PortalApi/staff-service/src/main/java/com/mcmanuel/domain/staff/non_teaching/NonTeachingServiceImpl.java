@@ -1,5 +1,6 @@
 package com.mcmanuel.domain.staff.non_teaching;
 
+import com.mcmanuel.domain.staff.AwsService;
 import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.Staff;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
@@ -27,23 +28,25 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> implements NonTeachingService{
     private final NonTeachingRepository nonTeachingRepo;
+    private final AwsService awsService;
 
-    public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService, NonTeachingRepository nonTeachingRepo1) {
+    public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService, NonTeachingRepository nonTeachingRepo1, AwsService awsService) {
         super(jwtService, manager, emailService, tokenService);
         this.nonTeachingRepo = nonTeachingRepo1;
+        this.awsService = awsService;
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public NonTeachingDto registerStaff(String email, RegisterRequest request) {
         if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Password mismatch");
         }
-        if(request.getStatus()== null || (request.getStatus() == Status.TEACHING || request.getStatus() != Status.NON_TEACHING )){
-            throw new RuntimeException("Empty or Invalid category: Either teaching or non-teaching");
-        }
 
-        NonTeaching nonTeachingStaff = NonTeaching.builder()
+        if (request.getStatus() ==Status.NON_TEACHING){
+            String photoName = request.getLastname()+"_"+request.getFirstname()+"_passport";
+
+            NonTeaching nonTeachingStaff = NonTeaching.builder()
                 .staffId(generateStaffId(request.getDepartment().name()))
                 .email(request.getEmail())
                 .phoneNumber(request.getPhoneNumber())
@@ -51,17 +54,19 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> imp
                 .dateCreated(LocalDateTime.now())
                 .build();
 
-        if (request.getStatus() ==Status.TEACHING){
             ArrayList<Role> roles = new ArrayList<>();
-            roles.add(Role.LECTURER);
+            roles.add(Role.NON_TEACHING);
             nonTeachingStaff.setRoles(roles);
-        }
+            nonTeachingStaff.setImageUrl( awsService.uploadPhoto(request.getFile(),photoName));
 
         nonTeachingStaff.setFirstname(request.getFirstname());
+
         nonTeachingStaff.setLastname(request.getLastname());
         nonTeachingStaff.setEnabled(true);
 
         return Mapper.toDto(nonTeachingRepo.save(nonTeachingStaff));
+        }
+        else throw new RuntimeException("Invalid Staff Status");
     }
 
 

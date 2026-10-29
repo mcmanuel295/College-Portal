@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -43,6 +42,7 @@ public abstract class StaffServiceImpl<T> implements StaffService<T>{
         else throw new RuntimeException("Invalid Login request");
     }
 
+
     public void sendUserEmail(String email) throws MessagingException, jakarta.mail.MessagingException{
         emailService.sendEmail(email,tokenService.generateToken(email).getToken());
     }
@@ -51,3 +51,4 @@ public abstract class StaffServiceImpl<T> implements StaffService<T>{
         return tokenService.verifyOtp(email,otp);
     }
 }
+
