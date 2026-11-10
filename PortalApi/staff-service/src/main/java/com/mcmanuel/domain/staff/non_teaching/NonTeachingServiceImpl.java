@@ -4,6 +4,7 @@ import com.mcmanuel.domain.staff.AwsService;
 import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.Staff;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
+import com.mcmanuel.domain.staff.lecturer.LecturerRepository;
 import com.mcmanuel.domain.token.TokenService;
 import com.mcmanuel.email.EmailService;
 import com.mcmanuel.enums.Department;
@@ -12,6 +13,8 @@ import com.mcmanuel.enums.Status;
 import com.mcmanuel.exception.DepartmentNotFoundException;
 import com.mcmanuel.exception.StaffNotFoundException;
 import com.mcmanuel.pojo.RegisterRequest;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -30,11 +33,14 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> imp
     private final NonTeachingRepository nonTeachingRepo;
     private final AwsService awsService;
 
-    public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService, NonTeachingRepository nonTeachingRepo1, AwsService awsService) {
-        super(jwtService, manager, emailService, tokenService);
-        this.nonTeachingRepo = nonTeachingRepo1;
+    public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService,
+                                  LecturerRepository lecturerRepo, NonTeachingRepository nonTeachingRepo, AwsService awsService) {
+        super(jwtService, manager, emailService, tokenService, lecturerRepo, nonTeachingRepo);
+        this.nonTeachingRepo = nonTeachingRepo;
         this.awsService = awsService;
     }
+
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -92,8 +98,6 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> imp
 
         return verifiedDepartment.getCode()+verifiedDepartment.getFaculty().getCode()+verifiedDepartment.getNumber()+end;
     }
-
-
 
 
 

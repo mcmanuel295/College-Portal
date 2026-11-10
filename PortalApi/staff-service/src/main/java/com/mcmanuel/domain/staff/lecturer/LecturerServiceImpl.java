@@ -5,6 +5,7 @@ import com.mcmanuel.domain.staff.AwsService;
 import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.Staff;
 import com.mcmanuel.domain.staff.StaffServiceImpl;
+import com.mcmanuel.domain.staff.non_teaching.NonTeachingRepository;
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Status;
 import com.mcmanuel.pojo.Grade;
@@ -34,15 +35,19 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
     private final CourseClient courseClient;
     private final PasswordEncoder passwordEncoder;
     private final AwsService awsService;
+    private final NonTeachingRepository nonTeachingRepo;
 
-    public LecturerServiceImpl(LecturerRepository lecturerRepo, EmailService emailService, TokenService tokenService, CourseClient courseClient,
-                               JwtService jwtService, AuthenticationManager manager, PasswordEncoder passwordEncoder, AwsService awsService) {
-        super(jwtService, manager,emailService,tokenService);
-        this.lecturerRepo = lecturerRepo;
+
+    public LecturerServiceImpl(EmailService emailService, TokenService tokenService, CourseClient courseClient,
+                               JwtService jwtService, AuthenticationManager manager, LecturerRepository lecturerRepo, PasswordEncoder passwordEncoder, AwsService awsService, NonTeachingRepository nonTeachingRepo) {
+        super(jwtService, manager, emailService, tokenService, lecturerRepo, nonTeachingRepo);
         this.courseClient = courseClient;
+        this.lecturerRepo = lecturerRepo;
         this.passwordEncoder = passwordEncoder;
         this.awsService = awsService;
+        this.nonTeachingRepo = nonTeachingRepo;
     }
+
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -103,9 +108,9 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
 
 
     @Override
-    public LecturerDto findStaffByStaffId(String staffNumber) {
+    public LecturerDto findStaffByStaffId(String staffId) {
         return Mapper.toDto(
-                (Lecturer) lecturerRepo.findByStaffId(staffNumber).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"))
+                (Lecturer) lecturerRepo.findByStaffId(staffId).orElseThrow(()-> new StaffNotFoundException("Lecturer Not Found"))
         );
     }
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.function.Function;
@@ -30,7 +31,7 @@ public class JwtService {
     }
 
     public SecretKey key(){
-        return Keys.hmacShaKeyFor(Base64.getDecoder().decode( secretKeyString.getBytes()));
+        return new SecretKeySpec(Base64.getDecoder().decode( secretKeyString.getBytes()),"HmacSHA 256");
     }
 
     public String generateToken(String username, List<String> roles){

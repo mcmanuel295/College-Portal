@@ -7,8 +7,11 @@ import org.springframework.messaging.MessagingException;
 import java.util.List;
 
 public interface StaffService<T> {
+//    Non-Auth service
     String login(LoginRequest loginRequest);
     T registerStaff(String email,  RegisterRequest request);
+
+//   Staff Services
     T findStaffByStaffId(String staffId);
     T findStaffByEmail(String email);
     List<T> getAllStaffs(int pageNo, int pageSize);
