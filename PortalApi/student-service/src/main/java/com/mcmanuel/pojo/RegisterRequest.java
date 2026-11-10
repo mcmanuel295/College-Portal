@@ -3,6 +3,7 @@ package com.mcmanuel.pojo;
 import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Faculty;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -18,5 +19,5 @@ public class RegisterRequest {
     private Department department;
     private String createPassword;
     private String confirmPassword;
-//    private MultipartFile file;
+    private MultipartFile file;
 }
