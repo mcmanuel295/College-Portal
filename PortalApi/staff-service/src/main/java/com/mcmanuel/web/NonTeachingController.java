@@ -1,6 +1,6 @@
 package com.mcmanuel.web;
 
-import com.mcmanuel.domain.staff.lecturer.LecturerDto;
+import com.mcmanuel.domain.staff.StaffService;
 import com.mcmanuel.domain.staff.non_teaching.NonTeachingDto;
 import com.mcmanuel.domain.staff.non_teaching.NonTeachingService;
 import com.mcmanuel.pojo.RegisterRequest;
@@ -17,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @RequestMapping
 @Slf4j
 public class NonTeachingController implements StaffController<NonTeachingDto> {
     private final NonTeachingService service;
+
+    public NonTeachingController(StaffService<NonTeachingDto> service, NonTeachingService service1) {
+        this.service = service1;
+    }
 
 
     @Override

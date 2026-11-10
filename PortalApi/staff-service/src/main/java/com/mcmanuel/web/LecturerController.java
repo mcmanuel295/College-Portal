@@ -1,5 +1,6 @@
 package com.mcmanuel.web;
 
+import com.mcmanuel.domain.staff.StaffService;
 import com.mcmanuel.domain.staff.lecturer.LecturerDto;
 import com.mcmanuel.domain.staff.lecturer.LecturerService;
 import com.mcmanuel.pojo.Grade;
@@ -7,7 +8,6 @@ import com.mcmanuel.pojo.RegisterRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.EntityTypeException;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/lecturers")
-@RequiredArgsConstructor
 @Slf4j
 public class LecturerController implements StaffController<LecturerDto>{
     private final LecturerService service;
+
+    public LecturerController(StaffService<LecturerDto> service, LecturerService service1) {
+        this.service = service1;
+    }
 
     @Override
     @PostMapping("/")
@@ -42,6 +45,16 @@ public class LecturerController implements StaffController<LecturerDto>{
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','LECTURER')")
+    @Override
+    public ResponseEntity<LecturerDto> findStaffByStaffByEmail(String email) {
+        LecturerDto lecturerDto =service.findStaffByEmail(email);
+
+        if(lecturerDto!=null){
+            return new ResponseEntity<>(lecturerDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Find  All Staff Endpoint",summary = "Find all staff")
@@ -50,6 +63,7 @@ public class LecturerController implements StaffController<LecturerDto>{
     public ResponseEntity<List<LecturerDto>> findAllStaffs(@RequestParam(required = false,defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10",required = false) int pageSize){
         return new ResponseEntity<>( service.getAllStaffs(pageNo,pageSize), HttpStatus.OK);
     }
+
 
     @PreAuthorize("hasAnyRole('ADMIN','LECTURER')")
     @Operation(description = "Find Staff By StaffId Endpoint",summary ="Find Staff By StaffId" )
@@ -91,16 +105,7 @@ public class LecturerController implements StaffController<LecturerDto>{
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','LECTURER')")
-    @Override
-    public ResponseEntity<LecturerDto> findStaffByStaffByEmail(String email) {
-        LecturerDto lecturerDto =service.findStaffByEmail(email);
 
-        if(lecturerDto!=null){
-            return new ResponseEntity<>(lecturerDto, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
 
     @Operation(description = "Update Staff Bio Endpoint",summary = "Update staff bio")
@@ -110,7 +115,8 @@ public class LecturerController implements StaffController<LecturerDto>{
     public ResponseEntity<LecturerDto> updateBio(@RequestParam String staffId,@RequestParam String email,@RequestParam String phoneNumber){
         return new ResponseEntity<>(service.updateBio(staffId,email,phoneNumber), HttpStatus.OK);
     }
-
+    
+    
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(description = "Delete Staff Endpoint", summary = "Delete staff")
     @Override
