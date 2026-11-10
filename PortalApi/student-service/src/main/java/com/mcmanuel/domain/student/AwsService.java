@@ -20,7 +20,7 @@ public class AwsService {
     private String secret_key;
 
     @Value("${aws.s3.bucket-name}")
-    private String bucket_name;
+    private String bucketName;
 
     public String uploadPhoto(MultipartFile photo){
         try {
@@ -31,17 +31,17 @@ public class AwsService {
                     .withRegion(Regions.AF_SOUTH_1)
                     .build();
 
-            if(!s3Client.doesBucketExistV2(bucket_name)){
-                s3Client.createBucket(new CreateBucketRequest(bucket_name, String.valueOf(Regions.AF_SOUTH_1)));
+            if(!s3Client.doesBucketExistV2(bucketName)){
+                s3Client.createBucket(new CreateBucketRequest(bucketName, String.valueOf(Regions.AF_SOUTH_1)));
             }
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType("image/jpeg");
 
-            PutObjectRequest putRequest = new PutObjectRequest(bucket_name,photo.getOriginalFilename(),photo.getInputStream(),objectMetadata);
+            PutObjectRequest putRequest = new PutObjectRequest(bucketName,photo.getOriginalFilename(),photo.getInputStream(),objectMetadata);
             s3Client.putObject(putRequest);
 
-            return "https:/"+bucket_name+".s3.amazomaws.com/"+photo.getOriginalFilename();
+            return "https:/"+bucketName+".s3.amazomaws.com/"+photo.getOriginalFilename();
         }
         catch (Exception ex){
             System.out.println(ex.getMessage());

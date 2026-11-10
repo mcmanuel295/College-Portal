@@ -1,5 +1,7 @@
 package com.mcmanuel.domain.student;
 
+import com.google.genai.Client;
+import com.google.genai.types.*;
 import com.mcmanuel.client.CourseClient;
 import com.mcmanuel.enums.Level;
 import com.mcmanuel.domain.result.Result;
@@ -28,7 +30,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,7 @@ import java.util.*;
 @Slf4j
 @Transactional(rollbackFor = Exception.class)
 public class StudentServiceImp implements StudentService {
+    private final AwsService awsService;
     private final StudentRepository studentRepo;
     private final EmailService emailService;
     private final TokenService tokenService;
@@ -83,7 +85,7 @@ public class StudentServiceImp implements StudentService {
                 .GPA(0.00)
                 .password( passwordEncoder.encode(request.getConfirmPassword()))
                 .dateCreated(LocalDateTime.now())
-//                .imageUrl(request.getFile().getOriginalFilename())
+                .imageUrl(awsService.uploadPhoto(request.getFile()))
                 .build();
 
                 student.setFirstname(request.getFirstname());
@@ -92,6 +94,20 @@ public class StudentServiceImp implements StudentService {
 
 
         return Mapper.toDto(studentRepo.save(student));
+    }
+
+    private boolean assessPhoto(){
+        Optional<String> api_key= Optional.of("etdg");
+        try {
+            GenerateContentResponse response;
+            try(Client client = new Client()){
+                response= client.models.generateContent("gemini-3.8-flash", "Does this photo fit for a passport, on a scle of 1-10, give the integer values only", null);
+            }
+            return Integer.parseInt(Objects.requireNonNull(response.text())) > 5;
+        }
+        catch (NumberFormatException ex){
+            throw new NumberFormatException("Invalid pictorial response");
+        }
     }
 
     private String generateMatriculationNumber(String department){
