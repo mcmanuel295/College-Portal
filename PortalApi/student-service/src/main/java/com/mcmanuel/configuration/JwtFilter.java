@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -46,12 +47,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
            if(jwtService.verify(userDetails,token)){
                log.info("verify={} authorities={}",jwtService.verify(userDetails,token),userDetails.getAuthorities());
+
+               SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                UsernamePasswordAuthenticationToken authToken= new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-               SecurityContextHolder.getContext().setAuthentication(authToken);
+               securityContext.setAuthentication(authToken);
+               SecurityContextHolder.setContext(securityContext);
            }
-
         }
         filterChain.doFilter(request,response);
     }
