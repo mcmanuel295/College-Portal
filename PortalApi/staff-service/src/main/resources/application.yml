@@ -34,5 +34,10 @@ server:
 
 TOKEN_EXPIRATION : 3600000
 
-jwt_secret: ${SECRET_KEY}
+jwt_secret: ${JWT_SECRET_KEY}
 google_gemini_key: ${GEMINI_KEY}
+aws:
+  s3:
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+    bucket-name: ${AWS_BUCKET_NAME}
