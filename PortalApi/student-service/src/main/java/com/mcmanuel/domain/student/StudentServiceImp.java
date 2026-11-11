@@ -33,7 +33,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -53,7 +55,7 @@ public class StudentServiceImp implements StudentService {
     private final JwtService jwtService;
     private final AuthenticationManager manager;
     private final PasswordEncoder passwordEncoder;
-
+    private final Client client;
 
     @Override
     public void sendUserEmail(String email) throws MessagingException {
@@ -68,45 +70,67 @@ public class StudentServiceImp implements StudentService {
 
     @Override
     public StudentDto registerStudent(@Valid String email,@Valid RegisterRequest request) {
+        try{
+            if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
+                throw new RuntimeException("Password doesn't match");
+            }
+            String photoName = request.getLastname()+"_"+request.getFirstname()+"_passport";
+            Student student= Student.builder()
+                    .email(email)
+                    .faculty(request.getFaculty())
+                    .matriculationNumber(generateMatriculationNumber(request.getDepartment().name()))
+                    .phoneNumber(request.getPhoneNumber())
+                    .faculty(request.getFaculty())
+                    .department(request.getDepartment())
+                    .level(Level.LEVEL100)
+                    .role(Role.STUDENT)
+                    .CGPA(0.00)
+                    .GPA(0.00)
+                    .password( passwordEncoder.encode(request.getConfirmPassword()))
+                    .dateCreated(LocalDateTime.now())
+                    .build();
 
-        if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Password doesn't match");
+//            if (assessPhoto(request.getFile())){
+//                todo fix this
+//                student.setImageUrl(awsService.uploadPhoto(photoName,request.getFile()));
+                student.setImageUrl("passport");
+//            }
+//            else throw new RuntimeException("Invalid photo");
+
+            student.setImageUrl(photoName);
+            student.setFirstname(request.getFirstname());
+            student.setLastname(request.getLastname());
+            student.setEnabled(true);
+
+
+            return Mapper.toDto(studentRepo.save(student));
         }
-        Student student= Student.builder()
-                .email(email)
-                .faculty(request.getFaculty())
-                .matriculationNumber(generateMatriculationNumber(request.getDepartment().name()))
-                .phoneNumber(request.getPhoneNumber())
-                .faculty(request.getFaculty())
-                .department(request.getDepartment())
-                .level(Level.LEVEL100)
-                .role(Role.STUDENT)
-                .CGPA(0.00)
-                .GPA(0.00)
-                .password( passwordEncoder.encode(request.getConfirmPassword()))
-                .dateCreated(LocalDateTime.now())
-                .imageUrl(awsService.uploadPhoto(request.getFile()))
-                .build();
-
-                student.setFirstname(request.getFirstname());
-                student.setLastname(request.getLastname());
-                student.setLastname(request.getLastname());
-
-
-        return Mapper.toDto(studentRepo.save(student));
+        catch (Exception e){
+            throw new RuntimeException("Invalid photo");
+        }
     }
 
-    private boolean assessPhoto(){
-        Optional<String> api_key= Optional.of("etdg");
+    private boolean assessPhoto(MultipartFile photo){
         try {
+            byte [] bytes = photo.getBytes();
             GenerateContentResponse response;
-            try(Client client = new Client()){
-                response= client.models.generateContent("gemini-3.8-flash", "Does this photo fit for a passport, on a scle of 1-10, give the integer values only", null);
-            }
-            return Integer.parseInt(Objects.requireNonNull(response.text())) > 5;
+
+            Content content = Content.fromParts(
+                    Part.fromBytes(bytes,"image/jpeg"),
+                    Part.fromText("Does this photo fit for a passport, on a scale of 1-10, give the integer value only")
+            );
+
+            response= client.models.generateContent("gemini-3.8-flash", content, null);
+
+//            todo fix this
+//            return Integer.parseInt(Objects.requireNonNull(response.text()).trim()) > 5;
+            return true;
         }
         catch (NumberFormatException ex){
             throw new NumberFormatException("Invalid pictorial response");
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

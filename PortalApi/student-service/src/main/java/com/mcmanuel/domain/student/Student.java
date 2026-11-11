@@ -97,6 +97,8 @@ class Student{
 
     private String imageUrl;
 
+    private boolean isEnabled;
+
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "notifications", joinColumns = @JoinColumn(name = "student_id"))
