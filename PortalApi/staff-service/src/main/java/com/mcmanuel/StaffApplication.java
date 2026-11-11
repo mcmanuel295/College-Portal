@@ -5,6 +5,8 @@ import com.mcmanuel.enums.Department;
 import com.mcmanuel.enums.Status;
 import com.mcmanuel.exception.StaffNotFoundException;
 import com.mcmanuel.pojo.RegisterRequest;
+import jakarta.mail.Multipart;
+import jakarta.mail.internet.MimeMultipart;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +18,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @ConfigurationPropertiesScan
 @EnableScheduling
@@ -48,6 +53,7 @@ public class StaffApplication {
                             .phoneNumber("09081199688")
                             .createPassword("1234")
                             .confirmPassword("1234")
+                            .file(new File("C://Users/USER/Pictures/Camera Roll/WIN_20240610_14_18_48_Pro.jpg"))
                             .build()
             );
                 lecturerService.makeAdmin("CSC0805001");
@@ -55,3 +61,6 @@ public class StaffApplication {
     };
 }
 }
+
+
+
