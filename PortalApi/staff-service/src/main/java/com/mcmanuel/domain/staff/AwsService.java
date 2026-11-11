@@ -22,7 +22,7 @@ public class AwsService {
     @Value("${aws.s3.bucket-name}")
     private String bucket_name;
 
-    public String uploadPhoto(MultipartFile photo,String filename){
+    public String uploadPhoto(String filename,MultipartFile photo){
         try {
             BasicAWSCredentials credentials = new BasicAWSCredentials(access_key,secret_key);
 
@@ -38,7 +38,7 @@ public class AwsService {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType("image/jpeg");
 
-            PutObjectRequest putRequest = new PutObjectRequest(bucket_name,photo.getOriginalFilename(),photo.getInputStream(),objectMetadata);
+            PutObjectRequest putRequest = new PutObjectRequest(bucket_name,filename,photo.getInputStream(),objectMetadata);
             s3Client.putObject(putRequest);
 
             return "https:/"+bucket_name+".s3.amazomaws.com/"+filename;
