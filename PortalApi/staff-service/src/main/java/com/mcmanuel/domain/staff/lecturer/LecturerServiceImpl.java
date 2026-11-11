@@ -1,5 +1,9 @@
 package com.mcmanuel.domain.staff.lecturer;
 
+import com.google.genai.Client;
+import com.google.genai.types.Content;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.Part;
 import com.mcmanuel.client.CourseClient;
 import com.mcmanuel.domain.staff.AwsService;
 import com.mcmanuel.domain.staff.JwtService;
@@ -23,7 +27,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -36,16 +44,18 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
     private final PasswordEncoder passwordEncoder;
     private final AwsService awsService;
     private final NonTeachingRepository nonTeachingRepo;
+    private final Client client;
 
 
     public LecturerServiceImpl(EmailService emailService, TokenService tokenService, CourseClient courseClient,
-                               JwtService jwtService, AuthenticationManager manager, LecturerRepository lecturerRepo, PasswordEncoder passwordEncoder, AwsService awsService, NonTeachingRepository nonTeachingRepo) {
+                               JwtService jwtService, AuthenticationManager manager, LecturerRepository lecturerRepo, PasswordEncoder passwordEncoder, AwsService awsService, NonTeachingRepository nonTeachingRepo, Client client) {
         super(jwtService, manager, emailService, tokenService, lecturerRepo, nonTeachingRepo);
         this.courseClient = courseClient;
         this.lecturerRepo = lecturerRepo;
         this.passwordEncoder = passwordEncoder;
         this.awsService = awsService;
         this.nonTeachingRepo = nonTeachingRepo;
+        this.client = client;
     }
 
 
@@ -53,11 +63,12 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
     @Transactional(rollbackFor = Exception.class)
     @Override
     public LecturerDto registerStaff(String email, RegisterRequest request) {
-        if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
+        try{
+            if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Password mismatch");
         }
 
-        if(request.getStatus() == Status.TEACHING){
+            if(request.getStatus() == Status.TEACHING){
             String photoName = request.getLastname()+"_"+request.getFirstname()+"_passport";
 
 
@@ -68,20 +79,30 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
                     .phoneNumber(request.getPhoneNumber())
                     .dateCreated(LocalDateTime.now())
                     .department(request.getDepartment())
-                    .imageUrl( awsService.uploadPhoto(request.getFile(),photoName))
-
                     .build();
 
+
+//            todo
+//            if (assessPhoto(request.getFile())){
+//                lecturer.setImageUrl(awsService.uploadPhoto(photoName,request.getFile()));
+//            }
+//            else throw new RuntimeException("Invalid photo");
+
+            lecturer.setImageUrl(photoName);
             lecturer.setRoles(List.of(Role.LECTURER));
             lecturer.setFirstname(request.getFirstname());
             lecturer.setLastname(request.getLastname());
             lecturer.setPassword(passwordEncoder.encode(request.getConfirmPassword()));
             lecturer.setEnabled(true);
+
             return Mapper.toDto(lecturerRepo.save(lecturer));
         }
-        else throw new RuntimeException("Invalid Staff Status");
+            else throw new RuntimeException("Invalid Staff Status");
+        }
+        catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
-
 
     private String generateStaffId(String department) {
 //        CSC0805008
@@ -106,6 +127,27 @@ public class LecturerServiceImpl extends StaffServiceImpl<LecturerDto> implement
         return verifiedDepartment.getCode()+verifiedDepartment.getFaculty().getCode()+verifiedDepartment.getNumber()+end;
     }
 
+    private boolean assessPhoto(MultipartFile photo){
+        try {
+            byte [] bytes = photo.getBytes();
+            GenerateContentResponse response;
+
+            Content content = Content.fromParts(
+                    Part.fromBytes(bytes,"image/jpeg"),
+                    Part.fromText("Does this photo fit for a passport, on a scale of 1-10, give the integer value only")
+            );
+
+            response= client.models.generateContent("gemini-3.8-flash", content, null);
+//            return Integer.parseInt(Objects.requireNonNull(response.text()).trim()) > 5;
+            return true;
+        }
+        catch (NumberFormatException | IOException ex){
+            throw new NumberFormatException("Invalid pictorial response");
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public LecturerDto findStaffByStaffId(String staffId) {

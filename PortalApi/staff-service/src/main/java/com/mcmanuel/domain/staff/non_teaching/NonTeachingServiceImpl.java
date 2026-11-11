@@ -1,5 +1,10 @@
 package com.mcmanuel.domain.staff.non_teaching;
 
+import com.google.genai.Client;
+import com.google.genai.types.Content;
+import com.google.genai.types.GenerateContentResponse;
+import com.google.genai.types.Part;
+import com.mcmanuel.client.CourseClient;
 import com.mcmanuel.domain.staff.AwsService;
 import com.mcmanuel.domain.staff.JwtService;
 import com.mcmanuel.domain.staff.Staff;
@@ -19,37 +24,52 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> implements NonTeachingService{
     private final NonTeachingRepository nonTeachingRepo;
+    private final CourseClient courseClient;
+    private final PasswordEncoder passwordEncoder;
     private final AwsService awsService;
+    private final LecturerRepository lecturerRepo;
+    private final Client client;
+
 
     public NonTeachingServiceImpl(JwtService jwtService, AuthenticationManager manager, EmailService emailService, TokenService tokenService,
-                                  LecturerRepository lecturerRepo, NonTeachingRepository nonTeachingRepo, AwsService awsService) {
+                                  LecturerRepository lecturerRepo, NonTeachingRepository nonTeachingRepo, CourseClient courseClient, PasswordEncoder passwordEncoder, AwsService awsService, LecturerRepository lecturerRepo1, Client client) {
         super(jwtService, manager, emailService, tokenService, lecturerRepo, nonTeachingRepo);
         this.nonTeachingRepo = nonTeachingRepo;
+        this.courseClient = courseClient;
+        this.passwordEncoder = passwordEncoder;
         this.awsService = awsService;
+        this.lecturerRepo = lecturerRepo1;
+        this.client = client;
     }
 
 
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public NonTeachingDto registerStaff(String email, RegisterRequest request) {
-        if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
+        try{
+            if (!request.getCreatePassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Password mismatch");
-        }
+            }
 
-        if (request.getStatus() ==Status.NON_TEACHING){
+            if (request.getStatus() ==Status.NON_TEACHING){
             String photoName = request.getLastname()+"_"+request.getFirstname()+"_passport";
 
             NonTeaching nonTeachingStaff = NonTeaching.builder()
@@ -60,19 +80,31 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> imp
                 .dateCreated(LocalDateTime.now())
                 .build();
 
+
             ArrayList<Role> roles = new ArrayList<>();
             roles.add(Role.NON_TEACHING);
+//            try(FileInputStream stream = new FileInputStream(request.getFile())) {
+           
+//                if (assessPhoto(request.getFile())) {
+//                todo fix this
+//                nonTeachingStaff.setImageUrl(awsService.uploadPhoto(photoName,request.getFile()));
+//                    nonTeachingStaff.setImageUrl(photoName);
+//                } else throw new RuntimeException("Invalid photo");
+//            }
+
+            nonTeachingStaff.setImageUrl(photoName);
             nonTeachingStaff.setRoles(roles);
-            nonTeachingStaff.setImageUrl( awsService.uploadPhoto(request.getFile(),photoName));
+            nonTeachingStaff.setFirstname(request.getFirstname());
+            nonTeachingStaff.setLastname(request.getLastname());
+            nonTeachingStaff.setEnabled(true);
 
-        nonTeachingStaff.setFirstname(request.getFirstname());
-
-        nonTeachingStaff.setLastname(request.getLastname());
-        nonTeachingStaff.setEnabled(true);
-
-        return Mapper.toDto(nonTeachingRepo.save(nonTeachingStaff));
+            return Mapper.toDto(nonTeachingRepo.save(nonTeachingStaff));
         }
-        else throw new RuntimeException("Invalid Staff Status");
+            else throw new RuntimeException("Invalid Staff Status");
+        }
+        catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 
 
@@ -99,6 +131,27 @@ public class NonTeachingServiceImpl extends StaffServiceImpl<NonTeachingDto> imp
         return verifiedDepartment.getCode()+verifiedDepartment.getFaculty().getCode()+verifiedDepartment.getNumber()+end;
     }
 
+
+    private boolean assessPhoto(MultipartFile photo){
+        try {
+            byte [] bytes = photo.getBytes();
+            GenerateContentResponse response;
+
+            Content content = Content.fromParts(
+                    Part.fromBytes(bytes,"image/jpeg"),
+                    Part.fromText("Does this photo fit for a passport, on a scale of 1-10, give the integer value only")
+            );
+
+            response= client.models.generateContent("gemini-3.8-flash", content, null);
+            return Integer.parseInt(Objects.requireNonNull(response.text()).trim()) > 5;
+        }
+        catch (NumberFormatException ex){
+            throw new NumberFormatException("Invalid pictorial response");
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     @Override
